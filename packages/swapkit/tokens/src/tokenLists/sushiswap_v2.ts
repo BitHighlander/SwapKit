@@ -2,7 +2,7 @@ export const list = {
   provider: "SUSHISWAP_V2",
   chainId: "1",
   name: "SUSHISWAP_V2",
-  timestamp: "2024-08-06T16:30:59.958Z",
+  timestamp: "2024-08-15T00:30:33.469Z",
   version: {
     major: 1,
     minor: 0,
@@ -432,16 +432,6 @@ export const list = {
       ticker: "KP3R",
     },
     {
-      address: "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
-      chain: "ETH",
-      chainId: "1",
-      decimals: 18,
-      identifier: "ETH.LDO-0X5A98FCBEA516CF06857215779FD812CA3BEF1B32",
-      logoURI:
-        "https://storage.googleapis.com/token-list-swapkit-dev/images/eth.ldo-0x5a98fcbea516cf06857215779fd812ca3bef1b32.png",
-      ticker: "LDO",
-    },
-    {
       address: "0x55332170Cb7d36545B500f66a80291C83d40Bba7",
       chain: "ETH",
       chainId: "1",
@@ -840,6 +830,16 @@ export const list = {
       logoURI:
         "https://storage.googleapis.com/token-list-swapkit-dev/images/eth.vega-0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e.png",
       ticker: "VEGA",
+    },
+    {
+      address: "0x135B810e48e4307AB2a59ea294A6f1724781bD3C",
+      chain: "ETH",
+      chainId: "1",
+      decimals: 18,
+      identifier: "ETH.WAN-0X135B810E48E4307AB2A59EA294A6F1724781BD3C",
+      logoURI:
+        "https://storage.googleapis.com/token-list-swapkit-dev/images/eth.wan-0x135b810e48e4307ab2a59ea294a6f1724781bd3c.png",
+      ticker: "WAN",
     },
     {
       address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",

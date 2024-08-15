@@ -16,13 +16,12 @@ import type { ARBToolbox, AVAXToolbox, BSCToolbox } from "@swapkit/toolbox-evm";
 import type { WalletTxParams } from "./walletHelpers.ts";
 import {
   cosmosTransfer,
-  getXDEFIAddress,
-  getXDEFIProvider,
-  getXdefiMethods,
+  getKEEPKEYAddress,
+  getKEEPKEYProvider,
   walletTransfer,
 } from "./walletHelpers.ts";
 
-const XDEFI_SUPPORTED_CHAINS = [
+const KEEPKEY_SUPPORTED_CHAINS = [
   Chain.Arbitrum,
   Chain.Avalanche,
   Chain.BinanceSmartChain,
@@ -45,7 +44,7 @@ async function getWalletMethodsForChain({
   blockchairApiKey,
   covalentApiKey,
   ethplorerApiKey,
-}: ConnectConfig & { chain: (typeof XDEFI_SUPPORTED_CHAINS)[number] }) {
+}: ConnectConfig & { chain: (typeof KEEPKEY_SUPPORTED_CHAINS)[number] }) {
   switch (chain) {
     case Chain.Solana: {
       const { SOLToolbox } = await import("@swapkit/toolbox-solana");
@@ -108,17 +107,17 @@ async function getWalletMethodsForChain({
         getBalance,
         BrowserProvider,
       } = await import("@swapkit/toolbox-evm");
-      const ethereumWindowProvider = getXDEFIProvider(chain);
+      const ethereumWindowProvider = getKEEPKEYProvider(chain);
 
       if (!ethereumWindowProvider) {
-        throw new SwapKitError("wallet_xdefi_not_found");
+        throw new SwapKitError("wallet_keepkey_not_found");
       }
 
       const apiKeys = ensureEVMApiKeys({ chain, covalentApiKey, ethplorerApiKey });
       const provider = new BrowserProvider(ethereumWindowProvider, "any");
       const signer = await provider.getSigner();
       const toolbox = getToolboxByChain(chain)({ ...apiKeys, provider, signer });
-      const xdefiMethods = getXdefiMethods(provider);
+      const keepkeyMethods = getXdefiMethods(provider);
 
       try {
         chain !== Chain.Ethereum &&
@@ -135,7 +134,7 @@ async function getWalletMethodsForChain({
       } catch (_error) {
         throw new SwapKitError({
           errorKey: "wallet_failed_to_add_or_switch_network",
-          info: { wallet: WalletOption.XDEFI, chain },
+          info: { wallet: WalletOption.KEEPKEY, chain },
         });
       }
 
@@ -150,8 +149,8 @@ async function getWalletMethodsForChain({
         chainId: ChainToHexChainId[chain],
         toolbox: {
           ...toolbox,
-          ...xdefiMethods,
-          // Overwrite xdefi getBalance due to race condition in their app when connecting multiple evm wallets
+          ...keepkeyMethods,
+          // Overwrite keepkey getBalance due to race condition in their app when connecting multiple evm wallets
           getBalance: (address: string, potentialScamFilter?: boolean) =>
             getBalance({
               chain,
@@ -169,17 +168,15 @@ async function getWalletMethodsForChain({
   }
 }
 
-function connectXDEFI({
+function connectKEEPKEY({
   addChain,
   config: { covalentApiKey, ethplorerApiKey, blockchairApiKey, thorswapApiKey },
 }: ConnectWalletParams) {
-  return async (chains: (typeof XDEFI_SUPPORTED_CHAINS)[number][]) => {
+  return async (chains: (typeof KEEPKEY_SUPPORTED_CHAINS)[number][]) => {
     setRequestClientConfig({ apiKey: thorswapApiKey });
-    console.log("connectXDEFI chains: ", chains);
-    const promises = chains.map(async (chain) => {
-      const address = await getXDEFIAddress(chain);
-      console.log("connectXDEFI address: ", address);
 
+    const promises = chains.map(async (chain) => {
+      const address = await getKEEPKEYAddress(chain);
       const walletMethods = await getWalletMethodsForChain({
         chain,
         blockchairApiKey,
@@ -192,7 +189,7 @@ function connectXDEFI({
         address,
         balance: [],
         chain,
-        walletType: WalletOption.XDEFI,
+        walletType: WalletOption.KEEPKEY,
       });
     });
 
@@ -202,4 +199,4 @@ function connectXDEFI({
   };
 }
 
-export const xdefiWallet = { connectXDEFI } as const;
+export const keepkeyWallet = { connectKEEPKEY } as const;
