@@ -17,6 +17,7 @@ import type { WalletTxParams } from "./walletHelpers.ts";
 import {
   cosmosTransfer,
   getKEEPKEYAddress,
+  getKEEPKEYMethods,
   getKEEPKEYProvider,
   walletTransfer,
 } from "./walletHelpers.ts";
@@ -117,7 +118,7 @@ async function getWalletMethodsForChain({
       const provider = new BrowserProvider(ethereumWindowProvider, "any");
       const signer = await provider.getSigner();
       const toolbox = getToolboxByChain(chain)({ ...apiKeys, provider, signer });
-      const keepkeyMethods = getXdefiMethods(provider);
+      const keepkeyMethods = getKEEPKEYMethods(provider);
 
       try {
         chain !== Chain.Ethereum &&
