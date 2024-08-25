@@ -86,6 +86,10 @@ const errorCodes = {
   wallet_talisman_not_enabled: 20601,
   wallet_talisman_not_found: 20602,
   wallet_polkadot_not_found: 20701,
+  wallet_keepkey_bex_not_found: 20801,
+  wallet_keepkey_bex_send_transaction_no_address: 20802,
+  wallet_keepkey_bex_contract_address_not_provided: 20803,
+  wallet_keepkey_bex_asset_not_defined: 20804,
   /**
    * Chainflip
    */

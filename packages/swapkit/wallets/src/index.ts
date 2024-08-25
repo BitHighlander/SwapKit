@@ -1,6 +1,7 @@
 import { coinbaseWallet } from "@swapkit/wallet-coinbase";
 import { evmWallet } from "@swapkit/wallet-evm-extensions";
 import { keepkeyWallet } from "@swapkit/wallet-keepkey";
+import { keepkeyBexWallet } from "@swapkit/wallet-keepkey-bex";
 import { keplrWallet } from "@swapkit/wallet-keplr";
 import { keystoreWallet } from "@swapkit/wallet-keystore";
 import { ledgerWallet } from "@swapkit/wallet-ledger";
@@ -16,6 +17,7 @@ export const wallets = {
   ...coinbaseWallet,
   ...evmWallet,
   ...keepkeyWallet,
+  ...keepkeyBexWallet,
   ...keplrWallet,
   ...keystoreWallet,
   ...ledgerWallet,

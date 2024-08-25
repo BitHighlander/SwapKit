@@ -4,6 +4,7 @@
     "@swapkit/wallet-coinbase": "workspace:*",
     "@swapkit/wallet-evm-extensions": "workspace:*",
     "@swapkit/wallet-keepkey": "workspace:*",
+    "@swapkit/wallet-keepkey-bex": "workspace:*",
     "@swapkit/wallet-keplr": "workspace:*",
     "@swapkit/wallet-keystore": "workspace:*",
     "@swapkit/wallet-ledger": "workspace:*",

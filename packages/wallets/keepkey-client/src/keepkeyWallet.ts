@@ -169,7 +169,7 @@ async function getWalletMethodsForChain({
   }
 }
 
-function connectKEEPKEY({
+function connectKEEPKEY_BEX({
   addChain,
   config: { covalentApiKey, ethplorerApiKey, blockchairApiKey, thorswapApiKey },
 }: ConnectWalletParams) {
@@ -200,4 +200,4 @@ function connectKEEPKEY({
   };
 }
 
-export const keepkeyWallet = { connectKEEPKEY } as const;
+export const keepkeyBexWallet = { connectKEEPKEY_BEX } as const;

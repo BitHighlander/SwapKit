@@ -1,10 +1,7 @@
 import type { Keplr } from "@keplr-wallet/types";
 import type { Eip1193Provider } from "@swapkit/toolbox-evm";
-import type { SolanaProvider } from "@swapkit/toolbox-solana";
 
-export { keepkeyWallet } from "./keepkeyWallet.ts";
-
-type XdefiSolana = SolanaProvider & { isXDEFI: boolean };
+export { keepkeyBexWallet } from "./keepkeyWallet.ts";
 
 declare global {
   interface Window {
@@ -18,7 +15,6 @@ declare global {
       litecoin: Eip1193Provider;
       thorchain: Eip1193Provider;
       mayachain: Eip1193Provider;
-      solana: XdefiSolana;
     };
   }
 }

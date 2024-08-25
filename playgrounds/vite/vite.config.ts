@@ -54,6 +54,7 @@ export default defineConfig({
       "@swapkit/wallet-evm-extensions": resolve("../../packages/wallets/evm-extensions/src"),
       "@swapkit/wallet-exodus": resolve("../../packages/wallets/exodus/src"),
       "@swapkit/wallet-keepkey": resolve("../../packages/wallets/keepkey/src"),
+      "@swapkit/wallet-keepkey-bex": resolve("../../packages/wallets/keepkey-client/src"),
       "@swapkit/wallet-keplr": resolve("../../packages/wallets/keplr/src"),
       "@swapkit/wallet-keystore": resolve("../../packages/wallets/keystore/src"),
       "@swapkit/wallet-ledger": resolve("../../packages/wallets/ledger/src"),
