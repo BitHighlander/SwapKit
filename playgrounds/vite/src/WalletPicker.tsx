@@ -89,6 +89,7 @@ export const availableChainsByWallet = {
     Chain.BinanceSmartChain,
     Chain.Bitcoin,
     Chain.BitcoinCash,
+    Chain.Base,
     Chain.Cosmos,
     Chain.Dash,
     Chain.Dogecoin,

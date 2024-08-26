@@ -54,6 +54,7 @@ export function getKEEPKEYProvider<T extends Chain>(
 
   switch (chain) {
     case Chain.Ethereum:
+    case Chain.Base:
     case Chain.Avalanche:
     case Chain.BinanceSmartChain:
     case Chain.Arbitrum:
@@ -62,8 +63,9 @@ export function getKEEPKEYProvider<T extends Chain>(
       // @ts-expect-error
       return window.xfi.ethereum;
 
+    case Chain.Osmosis:
     case Chain.Cosmos:
-    case Chain.Kujira:
+      // case Chain.Kujira:
       // @ts-expect-error
       return window.xfi.keplr;
 
@@ -79,6 +81,9 @@ export function getKEEPKEYProvider<T extends Chain>(
     case Chain.Litecoin:
       // @ts-expect-error
       return window.xfi.litecoin;
+    case Chain.Dash:
+      // @ts-expect-error
+      return window.xfi.dash;
     case Chain.THORChain:
       // @ts-expect-error
       return window.xfi.thorchain;
@@ -180,7 +185,7 @@ export async function walletTransfer(
    * EVM requires amount to be hex string
    * UTXO/Cosmos requires amount to be number
    */
-
+  // const chainId = ChainToChainId[chain];
   const from = await getKEEPKEYAddress(assetValue.chain);
   const params = [
     {

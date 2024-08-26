@@ -486,6 +486,7 @@ export const EIP1193SendTransaction = (
   provider: Provider | BrowserProvider,
   { from, to, data, value }: EVMTxParams | ContractTransaction,
 ): Promise<string> => {
+  console.log("EIP1193SendTransaction", provider, from, to, data, value);
   if (!isBrowserProvider(provider))
     throw new SwapKitError("toolbox_evm_provider_not_eip1193_compatible");
   return (provider as BrowserProvider).send("eth_sendTransaction", [
@@ -559,12 +560,13 @@ const createTransferTx = async (
   // Transfer ETH
   const txObject = {
     ...tx,
+    chainId: (await provider.getNetwork()).chainId,
     from,
     to: recipient,
     value: txAmount,
     data: data || hexlify(toUtf8Bytes(memo || "")),
   };
-
+  console.log("EVMtoolbox: createTransferTx: txObject:", txObject);
   return txObject;
 };
 

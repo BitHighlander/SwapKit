@@ -28,6 +28,7 @@ const KEEPKEY_SUPPORTED_CHAINS = [
   Chain.BinanceSmartChain,
   Chain.Bitcoin,
   Chain.BitcoinCash,
+  Chain.Base,
   Chain.Cosmos,
   Chain.Dogecoin,
   Chain.Ethereum,
@@ -95,6 +96,7 @@ async function getWalletMethodsForChain({
 
     case Chain.Ethereum:
     case Chain.BinanceSmartChain:
+    case Chain.Base:
     case Chain.Arbitrum:
     case Chain.Optimism:
     case Chain.Polygon:
@@ -151,7 +153,7 @@ async function getWalletMethodsForChain({
         toolbox: {
           ...toolbox,
           ...keepkeyMethods,
-          // Overwrite keepkey getBalance due to race condition in their app when connecting multiple evm wallets
+          // @TODO this only here because bug in xdefi? removeme?
           getBalance: (address: string, potentialScamFilter?: boolean) =>
             getBalance({
               chain,

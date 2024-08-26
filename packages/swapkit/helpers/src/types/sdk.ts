@@ -51,6 +51,7 @@ export type WalletTxParams = {
   feeOptionKey?: FeeOption;
   from?: string;
   memo?: string; // optional memo to pass
+  chainId?: string;
   recipient: string;
 };
 

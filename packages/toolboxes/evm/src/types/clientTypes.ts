@@ -61,6 +61,7 @@ export type TransferParams = WalletTxParams & {
   data?: string;
   from: string;
   nonce?: number;
+  chainId?: any;
   assetValue: AssetValue;
 };
 
