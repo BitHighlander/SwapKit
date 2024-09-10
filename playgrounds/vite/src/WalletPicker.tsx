@@ -155,6 +155,8 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
           localStorage.setItem("keepkeyApiKey", "1234");
           return true;
         }
+        case WalletOption.KEEPKEY_BEX:
+          return skClient.connectKEEPKEY_BEX?.(chains);
         case WalletOption.TREZOR:
         case WalletOption.LEDGER: {
           const [chain] = chains;
