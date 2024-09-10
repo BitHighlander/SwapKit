@@ -3,14 +3,13 @@
   "description": "SwapKit - Helpers",
   "dependencies": {
     "@swapkit/contracts": "workspace:*",
-    "@swapkit/tokens": "workspace:*",
-    "picocolors": "1.0.1"
+    "@swapkit/tokens": "workspace:*"
   },
   "devDependencies": {
     "@swapkit/toolbox-cosmos": "workspace:*",
     "@swapkit/toolbox-evm": "workspace:*",
-    "@swapkit/toolbox-solana": "workspace:*",
     "@swapkit/toolbox-radix": "workspace:*",
+    "@swapkit/toolbox-solana": "workspace:*",
     "@swapkit/toolbox-substrate": "workspace:*",
     "@swapkit/toolbox-utxo": "workspace:*"
   },
@@ -30,12 +29,12 @@
   "scripts": {
     "build": "bun run ./build.ts",
     "clean": "rm -rf dist node_modules *.tsbuildinfo",
-    "lint": "biome check --write ./src",
+    "lint": "biome check --diagnostic-level=error --write ./src",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "./src/index.ts",
-  "version": "1.5.1"
+  "version": "1.9.0"
 }

@@ -1,5 +1,79 @@
 # @swapkit/wallet-trezor
 
+## 1.0.29
+
+### Patch Changes
+
+- [#980](https://github.com/thorswap/SwapKit/pull/980) [`114a9d7`](https://github.com/thorswap/SwapKit/commit/114a9d709b88efa979ed3099062980fdbeed9c7d) Thanks [@ice-chillios](https://github.com/ice-chillios)! - Fix external TS declarations
+
+- Updated dependencies [[`114a9d7`](https://github.com/thorswap/SwapKit/commit/114a9d709b88efa979ed3099062980fdbeed9c7d), [`7171296`](https://github.com/thorswap/SwapKit/commit/71712965668f9ca73368997a3f1e8c22d1276fe0), [`755fa93`](https://github.com/thorswap/SwapKit/commit/755fa939b3c57f07a3c6d62237984d8f6d9629ac), [`b167101`](https://github.com/thorswap/SwapKit/commit/b167101ae3898734d91ac43accbc2d1e207cc1b1)]:
+  - @swapkit/helpers@1.9.0
+  - @swapkit/toolbox-utxo@1.1.12
+  - @swapkit/toolbox-evm@1.4.0
+
+## 1.0.28
+
+### Patch Changes
+
+- Updated dependencies [[`5d44a3c`](https://github.com/thorswap/SwapKit/commit/5d44a3c48dd458ce4f1265934a9f87eabbc7886a)]:
+  - @swapkit/helpers@1.8.0
+  - @swapkit/toolbox-evm@1.3.6
+  - @swapkit/toolbox-utxo@1.1.11
+
+## 1.0.27
+
+### Patch Changes
+
+- Updated dependencies [[`17f28d9`](https://github.com/thorswap/SwapKit/commit/17f28d901f35116960766f8c872a91baac67bd6a)]:
+  - @swapkit/helpers@1.7.1
+  - @swapkit/toolbox-evm@1.3.5
+  - @swapkit/toolbox-utxo@1.1.10
+
+## 1.0.26
+
+### Patch Changes
+
+- Updated dependencies [[`97b8d3f`](https://github.com/thorswap/SwapKit/commit/97b8d3fe31987cd0813c847159b8127087dada10)]:
+  - @swapkit/helpers@1.7.0
+  - @swapkit/toolbox-evm@1.3.4
+  - @swapkit/toolbox-utxo@1.1.9
+
+## 1.0.25
+
+### Patch Changes
+
+- Updated dependencies [[`59447e0`](https://github.com/thorswap/SwapKit/commit/59447e00ea8f32e30fbd61b9aa6e07314b42d6b6)]:
+  - @swapkit/helpers@1.6.3
+  - @swapkit/toolbox-evm@1.3.3
+  - @swapkit/toolbox-utxo@1.1.8
+
+## 1.0.24
+
+### Patch Changes
+
+- Updated dependencies [[`241d95f`](https://github.com/thorswap/SwapKit/commit/241d95fe407f76cebe3cebddbe594943a3be7e12)]:
+  - @swapkit/helpers@1.6.2
+  - @swapkit/toolbox-evm@1.3.2
+  - @swapkit/toolbox-utxo@1.1.7
+
+## 1.0.23
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.6.1
+  - @swapkit/toolbox-evm@1.3.1
+  - @swapkit/toolbox-utxo@1.1.6
+
+## 1.0.22
+
+### Patch Changes
+
+- Updated dependencies [[`9277d7e`](https://github.com/thorswap/SwapKit/commit/9277d7eb7727fb71cf0eeb427002be6633b8a044)]:
+  - @swapkit/helpers@1.6.0
+  - @swapkit/toolbox-evm@1.3.0
+  - @swapkit/toolbox-utxo@1.1.5
+
 ## 1.0.21
 
 ### Patch Changes

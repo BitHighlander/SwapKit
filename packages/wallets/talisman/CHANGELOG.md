@@ -1,5 +1,85 @@
 # @swapkit/wallet-talisman
 
+## 1.2.6
+
+### Patch Changes
+
+- [#980](https://github.com/thorswap/SwapKit/pull/980) [`114a9d7`](https://github.com/thorswap/SwapKit/commit/114a9d709b88efa979ed3099062980fdbeed9c7d) Thanks [@ice-chillios](https://github.com/ice-chillios)! - Fix external TS declarations
+
+- Updated dependencies [[`114a9d7`](https://github.com/thorswap/SwapKit/commit/114a9d709b88efa979ed3099062980fdbeed9c7d), [`7171296`](https://github.com/thorswap/SwapKit/commit/71712965668f9ca73368997a3f1e8c22d1276fe0), [`755fa93`](https://github.com/thorswap/SwapKit/commit/755fa939b3c57f07a3c6d62237984d8f6d9629ac), [`b167101`](https://github.com/thorswap/SwapKit/commit/b167101ae3898734d91ac43accbc2d1e207cc1b1)]:
+  - @swapkit/toolbox-substrate@1.2.7
+  - @swapkit/helpers@1.9.0
+  - @swapkit/toolbox-evm@1.4.0
+
+## 1.2.5
+
+### Patch Changes
+
+- Updated dependencies [[`5d44a3c`](https://github.com/thorswap/SwapKit/commit/5d44a3c48dd458ce4f1265934a9f87eabbc7886a)]:
+  - @swapkit/helpers@1.8.0
+  - @swapkit/toolbox-evm@1.3.6
+  - @swapkit/toolbox-substrate@1.2.6
+
+## 1.2.4
+
+### Patch Changes
+
+- Updated dependencies [[`17f28d9`](https://github.com/thorswap/SwapKit/commit/17f28d901f35116960766f8c872a91baac67bd6a)]:
+  - @swapkit/helpers@1.7.1
+  - @swapkit/toolbox-evm@1.3.5
+  - @swapkit/toolbox-substrate@1.2.5
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies [[`97b8d3f`](https://github.com/thorswap/SwapKit/commit/97b8d3fe31987cd0813c847159b8127087dada10)]:
+  - @swapkit/helpers@1.7.0
+  - @swapkit/toolbox-evm@1.3.4
+  - @swapkit/toolbox-substrate@1.2.4
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`59447e0`](https://github.com/thorswap/SwapKit/commit/59447e00ea8f32e30fbd61b9aa6e07314b42d6b6)]:
+  - @swapkit/helpers@1.6.3
+  - @swapkit/toolbox-evm@1.3.3
+  - @swapkit/toolbox-substrate@1.2.3
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`241d95f`](https://github.com/thorswap/SwapKit/commit/241d95fe407f76cebe3cebddbe594943a3be7e12)]:
+  - @swapkit/helpers@1.6.2
+  - @swapkit/toolbox-evm@1.3.2
+  - @swapkit/toolbox-substrate@1.2.2
+
+## 1.2.0
+
+### Minor Changes
+
+- [#960](https://github.com/thorswap/SwapKit/pull/960) [`64e5ce3`](https://github.com/thorswap/SwapKit/commit/64e5ce31b87d1b7fe48142dd08cc526c38641d87) Thanks [@anthon-dev](https://github.com/anthon-dev)! - Add avalance chain to the Talisman supported chains.
+
+## 1.1.18
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.6.1
+  - @swapkit/toolbox-evm@1.3.1
+  - @swapkit/toolbox-substrate@1.2.1
+
+## 1.1.17
+
+### Patch Changes
+
+- Updated dependencies [[`9277d7e`](https://github.com/thorswap/SwapKit/commit/9277d7eb7727fb71cf0eeb427002be6633b8a044)]:
+  - @swapkit/toolbox-substrate@1.2.0
+  - @swapkit/helpers@1.6.0
+  - @swapkit/toolbox-evm@1.3.0
+
 ## 1.1.16
 
 ### Patch Changes

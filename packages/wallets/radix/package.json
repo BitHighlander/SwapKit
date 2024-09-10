@@ -1,10 +1,10 @@
 {
   "author": "swapkit-oss",
   "dependencies": {
-    "@radixdlt/radix-dapp-toolkit": "2.0.1",
+    "@radixdlt/radix-dapp-toolkit": "2.0.2",
     "@radixdlt/wallet-sdk": "1.0.1",
-    "@swapkit/toolbox-radix": "workspace:*",
-    "@swapkit/helpers": "workspace:*"
+    "@swapkit/helpers": "workspace:*",
+    "@swapkit/toolbox-radix": "workspace:*"
   },
   "description": "SwapKit Lib ",
   "files": [
@@ -23,12 +23,12 @@
   "scripts": {
     "build": "bun run ./build.ts",
     "clean": "rm -rf dist node_modules *.tsbuildinfo",
-    "lint": "biome check --write ./src",
+    "lint": "biome check --diagnostic-level=error --write ./src",
     "test": "echo 'bun test'",
     "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "./src/index.ts",
-  "version": "1.0.21"
+  "version": "1.1.0"
 }

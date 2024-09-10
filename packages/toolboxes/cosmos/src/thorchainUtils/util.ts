@@ -8,8 +8,8 @@ import {
   SwapKitNumber,
 } from "@swapkit/helpers";
 
-import { createStargateClient } from "../util.ts";
-import { bech32ToBase64 } from "./addressFormat.ts";
+import { createStargateClient } from "../util";
+import { bech32ToBase64 } from "./addressFormat";
 
 export const DEFAULT_GAS_VALUE = "5000000000";
 
@@ -39,10 +39,12 @@ export const buildDepositTx = async ({
     throw new Error("Account does not exist");
   }
 
+  const chainId = ChainId.THORChain;
+
   return {
     memo,
     accountNumber: accountOnChain.accountNumber,
-    chainId: ChainId.THORChain,
+    chainId,
     fee: { amount: [], gas: DEFAULT_GAS_VALUE },
     sequence: accountOnChain.sequence,
     msgs: [

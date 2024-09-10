@@ -1,5 +1,5 @@
-import { BaseDecimal } from "../types/chains.ts";
-import type { SwapKitNumber } from "./swapKitNumber.ts";
+import { BaseDecimal } from "../types/chains";
+import type { SwapKitNumber } from "./swapKitNumber";
 
 type NumberPrimitivesType = {
   bigint: bigint;
@@ -96,7 +96,12 @@ export class BigIntArithmetics {
 
   set(value: SKBigIntParams): this {
     // @ts-expect-error False positive
-    return new this.constructor({ decimal: this.decimal, value, identifier: this.toString() });
+    return new this.constructor({
+      decimal: this.decimal,
+      value,
+      // @ts-expect-error False positive
+      identifier: this.toString({ includeSynthProtocol: true }),
+    });
   }
   add(...args: InitialisationValueType[]) {
     return this.#arithmetics("add", ...args);

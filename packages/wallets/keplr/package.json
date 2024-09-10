@@ -2,8 +2,8 @@
   "description": "SwapKit Wallet - Keplr",
   "dependencies": {
     "@keplr-wallet/types": "0.12.110",
-    "@swapkit/toolbox-cosmos": "workspace:*",
-    "@swapkit/helpers": "workspace:*"
+    "@swapkit/helpers": "workspace:*",
+    "@swapkit/toolbox-cosmos": "workspace:*"
   },
   "files": [
     "src/",
@@ -21,12 +21,12 @@
   "scripts": {
     "build": "bun run ./build.ts",
     "clean": "rm -rf dist node_modules *.tsbuildinfo",
-    "lint": "biome check --write ./src",
+    "lint": "biome check --diagnostic-level=error --write ./src",
     "test": "echo 'bun test'",
     "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "./src/index.ts",
-  "version": "1.0.23"
+  "version": "1.0.33"
 }

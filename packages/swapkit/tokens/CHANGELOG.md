@@ -1,5 +1,33 @@
 # @swapkit/tokens
 
+## 1.6.0
+
+### Minor Changes
+
+- [#968](https://github.com/thorswap/SwapKit/pull/968) [`7171296`](https://github.com/thorswap/SwapKit/commit/71712965668f9ca73368997a3f1e8c22d1276fe0) Thanks [@towanTG](https://github.com/towanTG)! - Fixes Radix Toolbox and adapts the Radix Wallet integration
+
+### Patch Changes
+
+- [#980](https://github.com/thorswap/SwapKit/pull/980) [`114a9d7`](https://github.com/thorswap/SwapKit/commit/114a9d709b88efa979ed3099062980fdbeed9c7d) Thanks [@ice-chillios](https://github.com/ice-chillios)! - Fix external TS declarations
+
+## 1.5.0
+
+### Minor Changes
+
+- [#977](https://github.com/thorswap/SwapKit/pull/977) [`5d44a3c`](https://github.com/thorswap/SwapKit/commit/5d44a3c48dd458ce4f1265934a9f87eabbc7886a) Thanks [@towanTG](https://github.com/towanTG)! - Supports new chainId for THORChain after hard fork 2.135.0
+
+## 1.4.0
+
+### Minor Changes
+
+- [#972](https://github.com/thorswap/SwapKit/pull/972) [`97b8d3f`](https://github.com/thorswap/SwapKit/commit/97b8d3fe31987cd0813c847159b8127087dada10) Thanks [@anthon-dev](https://github.com/anthon-dev)! - Adds dynamic THORChain chain id to be working throughout a hardfork
+
+## 1.3.0
+
+### Minor Changes
+
+- [`bea3d9f`](https://github.com/thorswap/SwapKit/commit/bea3d9ff5ba7135033f372438739050ddead7ef0) Thanks [@towanTG](https://github.com/towanTG)! - Updates tokenlist
+
 ## 1.2.0
 
 ### Minor Changes

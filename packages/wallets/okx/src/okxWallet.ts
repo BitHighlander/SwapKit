@@ -5,17 +5,18 @@ import {
   setRequestClientConfig,
 } from "@swapkit/helpers";
 
-import { getWalletForChain } from "./helpers.ts";
+import { getWalletForChain } from "./helpers";
 
-const OKX_SUPPORTED_CHAINS = [
+export const OKX_SUPPORTED_CHAINS = [
   Chain.Arbitrum,
   Chain.Avalanche,
+  Chain.Base,
   Chain.BinanceSmartChain,
+  Chain.Bitcoin,
+  Chain.Cosmos,
+  Chain.Ethereum,
   Chain.Optimism,
   Chain.Polygon,
-  Chain.Bitcoin,
-  Chain.Ethereum,
-  Chain.Cosmos,
 ] as const;
 
 function connectOkx({

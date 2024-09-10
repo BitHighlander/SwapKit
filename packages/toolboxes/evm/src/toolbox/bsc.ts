@@ -1,10 +1,10 @@
 import { BaseDecimal, Chain, ChainId, ChainToExplorerUrl, type FeeOption } from "@swapkit/helpers";
 import type { BrowserProvider, JsonRpcProvider, Signer } from "ethers";
 
-import type { CovalentApiType } from "../api/covalentApi.ts";
-import { covalentApi } from "../api/covalentApi.ts";
-import { type EVMTxBaseParams, estimateTransactionFee, getBalance } from "../index.ts";
-import { BaseEVMToolbox } from "./BaseEVMToolbox.ts";
+import type { CovalentApiType } from "../api/covalentApi";
+import { covalentApi } from "../api/covalentApi";
+import { type EVMTxBaseParams, estimateTransactionFee, getBalance } from "../index";
+import { EVMToolbox } from "./EVMToolbox";
 
 const getNetworkParams = () => ({
   chainId: ChainId.BinanceSmartChainHex,
@@ -26,11 +26,11 @@ export const BSCToolbox = ({
   provider: JsonRpcProvider | BrowserProvider;
 }) => {
   const bscApi = api || covalentApi({ apiKey: covalentApiKey, chainId: ChainId.BinanceSmartChain });
-  const baseToolbox = BaseEVMToolbox({ provider, signer, isEIP1559Compatible: false });
+  const evmToolbox = EVMToolbox({ provider, signer, isEIP1559Compatible: false });
   const chain = Chain.BinanceSmartChain;
 
   return {
-    ...baseToolbox,
+    ...evmToolbox,
     getNetworkParams,
     estimateTransactionFee: (txObject: EVMTxBaseParams, feeOptionKey: FeeOption) =>
       estimateTransactionFee(txObject, feeOptionKey, chain, provider, false),

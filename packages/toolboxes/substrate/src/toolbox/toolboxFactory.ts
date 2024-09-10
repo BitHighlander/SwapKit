@@ -2,10 +2,10 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import type { KeyringPair } from "@polkadot/keyring/types";
 import { AssetValue, Chain, RPCUrl, type SubstrateChain, SwapKitNumber } from "@swapkit/helpers";
 
-import { Network } from "../types/network.ts";
+import { Network } from "../types/network";
 
 import type { Signer } from "@polkadot/types/types";
-import { BaseSubstrateToolbox } from "./baseSubstrateToolbox.ts";
+import { BaseSubstrateToolbox } from "./baseSubstrateToolbox";
 
 type ToolboxParams = {
   providerUrl?: RPCUrl;
@@ -57,7 +57,7 @@ export const ChainflipToolbox = async ({ providerUrl, signer, generic = false }:
     ];
   }
 
-  const baseToolbox = await ToolboxFactory({
+  const evmToolbox = await ToolboxFactory({
     chain: Chain.Chainflip,
     signer,
     providerUrl,
@@ -65,7 +65,7 @@ export const ChainflipToolbox = async ({ providerUrl, signer, generic = false }:
   });
 
   return {
-    ...baseToolbox,
+    ...evmToolbox,
     getBalance: async (address: string) => getBalance(api, address),
   };
 };

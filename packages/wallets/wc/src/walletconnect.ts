@@ -19,23 +19,23 @@ import {
   DEFAULT_LOGGER,
   DEFAULT_RELAY_URL,
   THORCHAIN_MAINNET_ID,
-  WC_SUPPORTED_CHAINS,
-} from "./constants.ts";
-import { getEVMSigner } from "./evmSigner.ts";
-import { chainToChainId, getAddressByChain } from "./helpers.ts";
-import { getRequiredNamespaces } from "./namespaces.ts";
+} from "./constants";
+import { getEVMSigner } from "./evmSigner";
+import { chainToChainId, getAddressByChain } from "./helpers";
+import { getRequiredNamespaces } from "./namespaces";
 
-const SUPPORTED_CHAINS = [
-  Chain.BinanceSmartChain,
-  Chain.Ethereum,
-  Chain.THORChain,
-  Chain.Avalanche,
+export const WC_SUPPORTED_CHAINS = [
   Chain.Arbitrum,
+  Chain.Avalanche,
+  Chain.Base,
+  Chain.BinanceSmartChain,
+  Chain.Cosmos,
+  Chain.Ethereum,
+  Chain.Kujira,
+  Chain.Maya,
   Chain.Optimism,
   Chain.Polygon,
-  Chain.Maya,
-  Chain.Cosmos,
-  Chain.Kujira,
+  Chain.THORChain,
 ] as const;
 
 async function getToolbox({
@@ -48,19 +48,20 @@ async function getToolbox({
 }: {
   walletconnect: Walletconnect;
   session: SessionTypes.Struct;
-  chain: (typeof SUPPORTED_CHAINS)[number];
+  chain: (typeof WC_SUPPORTED_CHAINS)[number];
   covalentApiKey?: string;
   ethplorerApiKey?: string;
   stagenet?: boolean;
   address: string;
 }) {
   switch (chain) {
-    case Chain.Avalanche:
-    case Chain.BinanceSmartChain:
     case Chain.Arbitrum:
+    case Chain.Avalanche:
+    case Chain.Base:
+    case Chain.BinanceSmartChain:
+    case Chain.Ethereum:
     case Chain.Optimism:
-    case Chain.Polygon:
-    case Chain.Ethereum: {
+    case Chain.Polygon: {
       const { getProvider, getToolboxByChain } = await import("@swapkit/toolbox-evm");
 
       const keys = ensureEVMApiKeys({ chain, ethplorerApiKey, covalentApiKey });
@@ -123,16 +124,18 @@ async function getToolbox({
           buildAminoMsg({ chain: Chain.THORChain, assetValue, memo, from: address, ...rest }),
         ];
 
+        const chainId = ChainId.THORChain;
+
         const signDoc = makeSignDoc(
           msgs,
           fee,
-          ChainId.THORChain,
+          chainId,
           memo,
           accountNumber?.toString(),
           sequence?.toString() || "0",
         );
 
-        const signature: Todo = await signRequest(signDoc);
+        const signature: any = await signRequest(signDoc);
 
         const bodyBytes = buildEncodedTxBody({
           chain: Chain.THORChain,
@@ -216,7 +219,7 @@ async function getWalletconnect(
     const session = await client.connect({ requiredNamespaces });
 
     const accounts = Object.values(session.namespaces).flatMap(
-      (namespace: Todo) => namespace.accounts,
+      (namespace: any) => namespace.accounts,
     );
 
     const disconnect = async () => {

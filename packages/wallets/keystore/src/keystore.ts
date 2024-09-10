@@ -4,7 +4,6 @@ import {
   type ConnectWalletParams,
   DerivationPath,
   type DerivationPathArray,
-  RPCUrl,
   type WalletChain,
   WalletOption,
   type WalletTxParams,
@@ -29,7 +28,7 @@ type KeystoreOptions = {
 };
 
 type Params = KeystoreOptions & {
-  api?: Todo;
+  api?: any;
   rpcUrl?: string;
   chain: Chain;
   phrase: string;
@@ -48,12 +47,13 @@ const getWalletMethodsForChain = async ({
   stagenet,
 }: Params) => {
   switch (chain) {
-    case Chain.BinanceSmartChain:
     case Chain.Arbitrum:
-    case Chain.Optimism:
-    case Chain.Polygon:
     case Chain.Avalanche:
-    case Chain.Ethereum: {
+    case Chain.Base:
+    case Chain.BinanceSmartChain:
+    case Chain.Ethereum:
+    case Chain.Optimism:
+    case Chain.Polygon: {
       const { HDNodeWallet, getProvider, getToolboxByChain } = await import("@swapkit/toolbox-evm");
 
       const keys = ensureEVMApiKeys({ chain, covalentApiKey, ethplorerApiKey });
@@ -166,18 +166,6 @@ const getWalletMethodsForChain = async ({
       const toolbox = await getToolboxByChain(chain, { signer });
 
       return { address: signer.address, walletMethods: toolbox };
-    }
-
-    case Chain.Radix: {
-      const { getRadixCoreApiClient, RadixToolbox, createPrivateKey, RadixMainnet } = await import(
-        "@swapkit/toolbox-radix"
-      );
-
-      const api = await getRadixCoreApiClient(RPCUrl.Radix, RadixMainnet);
-      const signer = await createPrivateKey(phrase);
-      const toolbox = await RadixToolbox({ api, signer });
-
-      return { address: toolbox.getAddress(), walletMethods: toolbox };
     }
 
     case Chain.Solana: {

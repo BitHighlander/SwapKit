@@ -8,20 +8,16 @@ import {
   SwapKitNumber,
 } from "@swapkit/helpers";
 
-import { CosmosClient } from "../cosmosClient.ts";
+import { CosmosClient } from "../cosmosClient";
 import {
   type KujiraToolboxType,
   type ToolboxParams,
   USK_KUJIRA_FACTORY_DENOM,
   YUM_KUJIRA_FACTORY_DENOM,
-} from "../index.ts";
-import type { TransferParams } from "../types.ts";
+} from "../index";
+import type { TransferParams } from "../types";
 
-import {
-  BaseCosmosToolbox,
-  getAssetFromDenom,
-  getFeeRateFromThorswap,
-} from "./BaseCosmosToolbox.ts";
+import { BaseCosmosToolbox, getAssetFromDenom, getFeeRateFromThorswap } from "./BaseCosmosToolbox";
 
 async function getFees() {
   const baseFee = await getFeeRateFromThorswap(ChainId.Kujira, 1000);
@@ -40,7 +36,7 @@ export const KujiraToolbox = ({ server }: ToolboxParams = {}): KujiraToolboxType
     prefix: "kujira",
   });
 
-  const baseToolbox: {
+  const cosmosToolbox: {
     validateAddress: (address: string) => boolean;
     getAddressFromMnemonic: (phrase: string) => Promise<string>;
     getAccount: (address: string) => Promise<Account | null>;
@@ -57,7 +53,7 @@ export const KujiraToolbox = ({ server }: ToolboxParams = {}): KujiraToolboxType
   });
 
   return {
-    ...baseToolbox,
+    ...cosmosToolbox,
     getFees,
     getBalance: async (address: string, _potentialScamFilter?: boolean) => {
       const denomBalances = await client.getBalance(address);
@@ -77,7 +73,7 @@ export const KujiraToolbox = ({ server }: ToolboxParams = {}): KujiraToolboxType
     transfer: async (params: TransferParams) => {
       const gasFees = await getFees();
 
-      return baseToolbox.transfer({
+      return cosmosToolbox.transfer({
         ...params,
         fee: params.fee || {
           amount: [

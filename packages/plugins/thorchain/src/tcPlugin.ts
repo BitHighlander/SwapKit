@@ -24,16 +24,16 @@ import {
   lowercasedContractAbiMapping,
 } from "@swapkit/helpers";
 
-import { basePlugin } from "./basePlugin.ts";
-import { getSwapInParams } from "./getSwapParams.ts";
-import { prepareTxParams, validateAddressType } from "./shared.ts";
+import { basePlugin } from "./basePlugin";
+import { getSwapInParams } from "./getSwapParams";
+import { prepareTxParams, validateAddressType } from "./shared";
 import type {
   AddLiquidityParams,
   CoreTxParams,
   CreateLiquidityParams,
   LoanParams,
   SwapWithRouteParams,
-} from "./types.ts";
+} from "./types";
 
 type SupportedChain = EVMChain | Chain.THORChain | UTXOChain | Chain.Cosmos;
 
@@ -66,7 +66,9 @@ function plugin({ getWallet, stagenet = false }: SwapKitPluginParams) {
       throw new SwapKitError("core_wallet_connection_not_found");
     }
 
-    const isAddressValidated = validateAddressType({ address: wallet.address, chain });
+    const isAddressValidated =
+      validateAddressType({ address: wallet.address, chain }) &&
+      validateAddressType({ address: recipient, chain });
     if (!isAddressValidated) {
       throw new SwapKitError("core_transaction_invalid_sender_address");
     }

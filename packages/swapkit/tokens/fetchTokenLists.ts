@@ -1,5 +1,5 @@
 import { SwapKitApi } from "@swapkit/api";
-import { Chain } from "@swapkit/helpers";
+import { Chain, ChainId, ProviderName } from "@swapkit/helpers";
 
 function parseChain(chain: string) {
   if (chain === "ARBITRUM") return Chain.Arbitrum;
@@ -13,8 +13,22 @@ function parseIdentifier(identifier: string) {
   return identifier;
 }
 
+const rawproviders = await SwapKitApi.getTokenListProvidersV2();
+
+console.info(
+  rawproviders.filter(
+    (provider) =>
+      ![ProviderName.THORCHAIN_STREAMING, ProviderName.MAYACHAIN_STREAMING].includes(
+        provider.provider,
+      ),
+  ),
+);
+
 const providers = (await SwapKitApi.getTokenListProvidersV2()).filter(
-  (provider) => provider.provider !== "THORCHAIN_STREAMING",
+  (provider) =>
+    ![ProviderName.THORCHAIN_STREAMING, ProviderName.MAYACHAIN_STREAMING].includes(
+      provider.provider,
+    ),
 );
 
 console.info(
@@ -22,6 +36,8 @@ console.info(
     .map(({ provider }) => provider)
     .join("\n-")}`,
 );
+
+const thorchainChainId = ChainId.THORChain;
 
 for (const { provider } of providers) {
   try {
@@ -34,7 +50,8 @@ for (const { provider } of providers) {
       .map((token) => ({
         address: token.address,
         chain: parseChain(token.chain),
-        chainId: token.chainId,
+        // TODO remove after fork
+        chainId: token.chainId === "thorchain-mainnet-v1" ? thorchainChainId : token.chainId,
         decimals: token.decimals,
         identifier: parseIdentifier(token.identifier),
         logoURI: token.logoURI,

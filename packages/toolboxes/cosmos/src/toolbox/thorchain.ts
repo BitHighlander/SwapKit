@@ -21,7 +21,7 @@ import {
   SwapKitNumber,
 } from "@swapkit/helpers";
 
-import { CosmosClient } from "../cosmosClient.ts";
+import { CosmosClient } from "../cosmosClient";
 import {
   buildAminoMsg,
   buildEncodedTxBody,
@@ -31,22 +31,22 @@ import {
   createDefaultRegistry,
   getDefaultChainFee,
   prepareMessageForBroadcast,
-} from "../thorchainUtils/index.ts";
+} from "../thorchainUtils/index";
 import type {
   DepositParam,
   MayaToolboxType,
   ThorchainConstantsResponse,
   ThorchainToolboxType,
-} from "../thorchainUtils/types/client-types.ts";
-import type { Signer, ToolboxParams, TransferParams } from "../types.ts";
+} from "../thorchainUtils/types/client-types";
+import type { Signer, ToolboxParams, TransferParams } from "../types";
 import {
   createOfflineStargateClient,
   createSigningStargateClient,
   createStargateClient,
   getRPC,
-} from "../util.ts";
+} from "../util";
 
-import { BaseCosmosToolbox } from "./BaseCosmosToolbox.ts";
+import { BaseCosmosToolbox } from "./BaseCosmosToolbox";
 
 const secp256k1HdWalletFromMnemonic =
   ({ prefix, derivationPath }: { prefix: string; derivationPath: string }) =>
@@ -91,7 +91,7 @@ const signMultisigTx = async (
 
   const bodyBytes = await buildEncodedTxBody({
     chain,
-    msgs: msgs.map((msg: NotWorth) => prepareMessageForBroadcast(msg)),
+    msgs: msgs.map((msg: any) => prepareMessageForBroadcast(msg)),
     memo,
   });
 
@@ -199,7 +199,7 @@ export const BaseThorchainToolbox = ({
   });
   const defaultFee = getDefaultChainFee(chain);
 
-  const baseToolbox: {
+  const cosmosToolbox: {
     createPrivateKeyFromPhrase: (phrase: string) => Promise<Uint8Array>;
     getAccount: (address: string) => Promise<Account | null>;
     validateAddress: (address: string) => boolean;
@@ -216,7 +216,7 @@ export const BaseThorchainToolbox = ({
 
   const loadAddressBalances = async (address: string) => {
     try {
-      const balances: AssetValue[] = await baseToolbox.getBalance(address);
+      const balances: AssetValue[] = await cosmosToolbox.getBalance(address);
 
       return balances;
     } catch (error) {
@@ -278,7 +278,7 @@ export const BaseThorchainToolbox = ({
   };
 
   return {
-    ...baseToolbox,
+    ...cosmosToolbox,
     deposit: (params: DepositParam & { from: string }) => transfer(params),
     transfer,
     getFees,
@@ -300,7 +300,7 @@ export const BaseThorchainToolbox = ({
     loadAddressBalances,
     pubkeyToAddress: __REEXPORT__pubkeyToAddress(prefix),
     signWithPrivateKey,
-    verifySignature: verifySignature(baseToolbox.getAccount),
+    verifySignature: verifySignature(cosmosToolbox.getAccount),
   };
 };
 

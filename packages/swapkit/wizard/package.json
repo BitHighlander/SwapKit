@@ -28,12 +28,12 @@
     "clean": "rm -rf dist node_modules *.tsbuildinfo",
     "cli": "bun run ./dist/cli.js",
     "dev": "bun run ./cli.ts",
-    "lint": "biome check --write ./src",
+    "lint": "biome check --diagnostic-level=error --write ./src",
     "test": "echo 'bun test'",
     "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "./src/index.ts",
-  "version": "1.0.3"
+  "version": "1.0.4"
 }

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
-import { BaseDecimal, Chain } from "../../types/chains.ts";
-import { AssetValue, getMinAmountByChain } from "../assetValue.ts";
+import { BaseDecimal, Chain } from "../../types/chains";
+import { AssetValue, getMinAmountByChain } from "../assetValue";
 
 describe("AssetValue", () => {
   describe("assetValue", () => {
@@ -76,6 +76,15 @@ describe("AssetValue", () => {
       expect(ethMayaSynth.toString({ includeSynthProtocol: true })).toBe("MAYA.ETH/ETH");
       expect(ethMayaSynth.getBaseValue("string")).toBe("1000000000");
 
+      const ethTCSynthFallback = AssetValue.from({
+        asset: "ETH/ETH",
+        value: 10,
+      });
+
+      expect(ethTCSynthFallback.toString()).toBe("ETH/ETH");
+      expect(ethTCSynthFallback.toString({ includeSynthProtocol: true })).toBe("THOR.ETH/ETH");
+      expect(ethTCSynthFallback.getBaseValue("string")).toBe("1000000000");
+
       // TODO:
       // const radixXWBTC = new AssetValue({
       //   identifier:
@@ -87,6 +96,57 @@ describe("AssetValue", () => {
       // expect(radixXWBTC.toString()).toBe(
       //   "RADIX.XWBTC-resource_rdx1t580qxc7upat7lww4l2c4jckacafjeudxj5wpjrrct0p3e82sq4y75",
       // )
+    });
+  });
+
+  describe("set", () => {
+    test("get a copy of an assetValue with a new value", () => {
+      const btc = AssetValue.from({
+        asset: "BTC.BTC",
+      });
+
+      const btc2 = btc.set(10);
+
+      expect(btc2).toBeDefined();
+      expect(btc2).toEqual(
+        expect.objectContaining({
+          chain: Chain.Bitcoin,
+          decimal: 8,
+          isGasAsset: true,
+          isSynthetic: false,
+          symbol: "BTC",
+          ticker: "BTC",
+        }),
+      );
+
+      expect(btc.getValue("string")).toBe("0");
+      expect(btc2.getValue("string")).toBe("10");
+    });
+
+    test("get a copy of a synth assetValue with a new value", () => {
+      const synthAvax = AssetValue.from({
+        asset: "THOR.AVAX/AVAX",
+        value: 1,
+      });
+
+      const synthAvax2 = synthAvax.set(10);
+
+      expect(synthAvax2).toBeDefined();
+      expect(synthAvax2).toEqual(
+        expect.objectContaining({
+          chain: Chain.THORChain,
+          decimal: 8,
+          isGasAsset: false,
+          isSynthetic: true,
+          symbol: "AVAX/AVAX",
+          ticker: "AVAX",
+        }),
+      );
+
+      expect(synthAvax.getValue("string")).toBe("1");
+      expect(synthAvax2.getValue("string")).toBe("10");
+      expect(synthAvax.toString({ includeSynthProtocol: true })).toBe("THOR.AVAX/AVAX");
+      expect(synthAvax2.toString({ includeSynthProtocol: true })).toBe("THOR.AVAX/AVAX");
     });
   });
 

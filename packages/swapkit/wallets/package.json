@@ -3,14 +3,16 @@
   "dependencies": {
     "@swapkit/wallet-coinbase": "workspace:*",
     "@swapkit/wallet-evm-extensions": "workspace:*",
+    "@swapkit/wallet-exodus": "workspace:*",
     "@swapkit/wallet-keepkey": "workspace:*",
     "@swapkit/wallet-keepkey-bex": "workspace:*",
     "@swapkit/wallet-keplr": "workspace:*",
     "@swapkit/wallet-keystore": "workspace:*",
     "@swapkit/wallet-ledger": "workspace:*",
     "@swapkit/wallet-okx": "workspace:*",
-    "@swapkit/wallet-polkadotjs": "workspace:*",
     "@swapkit/wallet-phantom": "workspace:*",
+    "@swapkit/wallet-polkadotjs": "workspace:*",
+    "@swapkit/wallet-radix": "workspace:*",
     "@swapkit/wallet-talisman": "workspace:*",
     "@swapkit/wallet-trezor": "workspace:*",
     "@swapkit/wallet-wc": "workspace:*",
@@ -32,12 +34,12 @@
   "scripts": {
     "build": "bun run ./build.ts",
     "clean": "rm -rf dist node_modules *.tsbuildinfo",
-    "lint": "biome check --write ./src",
+    "lint": "biome check --diagnostic-level=error --write ./src",
     "test": "echo 'bun test'",
     "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "./src/index.ts",
-  "version": "1.0.24"
+  "version": "1.2.0"
 }

@@ -1,6 +1,7 @@
 export enum RPCUrl {
   Arbitrum = "https://arb1.arbitrum.io/rpc",
   Avalanche = "https://node-router.thorswap.net/avalanche-c",
+  Base = "https://base.llamarpc.com",
   BinanceSmartChain = "https://bsc-dataseed.binance.org",
   Bitcoin = "https://node-router.thorswap.net/bitcoin",
   BitcoinCash = "https://node-router.thorswap.net/bitcoin-cash",
@@ -19,12 +20,13 @@ export enum RPCUrl {
   Radix = "https://radix-mainnet.rpc.grove.city/v1/326002fc/core",
   THORChain = "https://rpc.thorswap.net",
   THORChainStagenet = "https://stagenet-rpc.ninerealms.com",
-  Solana = "https://mainnet.helius-rpc.com/?api-key=2cbe3ae6-cfc5-4141-a093-0055d0fa3d80",
+  Solana = "https://mainnet.helius-rpc.com",
 }
 
 export enum ExplorerUrl {
   Arbitrum = "https://arbiscan.io",
   Avalanche = "https://snowtrace.io",
+  Base = "https://basescan.org",
   BinanceSmartChain = "https://bscscan.com",
   Bitcoin = "https://blockchair.com/bitcoin",
   BitcoinCash = "https://www.blockchair.com/bitcoin-cash",

@@ -1,9 +1,8 @@
 import {
+  type AssetValue,
   Chain,
-  type ChainId,
   ChainToChainId,
   ChainToHexChainId,
-  ChainToRPC,
   type ConnectConfig,
   type ConnectWalletParams,
   SwapKitError,
@@ -13,18 +12,18 @@ import {
 } from "@swapkit/helpers";
 import type { ARBToolbox, AVAXToolbox, BSCToolbox } from "@swapkit/toolbox-evm";
 
-import type { WalletTxParams } from "./walletHelpers.ts";
+import type { WalletTxParams } from "./walletHelpers";
 import {
-  cosmosTransfer,
   getXDEFIAddress,
   getXDEFIProvider,
   getXdefiMethods,
   walletTransfer,
-} from "./walletHelpers.ts";
+} from "./walletHelpers";
 
-const XDEFI_SUPPORTED_CHAINS = [
+export const XDEFI_SUPPORTED_CHAINS = [
   Chain.Arbitrum,
   Chain.Avalanche,
+  Chain.Base,
   Chain.BinanceSmartChain,
   Chain.Bitcoin,
   Chain.BitcoinCash,
@@ -72,14 +71,26 @@ async function getWalletMethodsForChain({
     case Chain.Cosmos:
     case Chain.Kujira: {
       const { getToolboxByChain } = await import("@swapkit/toolbox-cosmos");
-      const toolbox = getToolboxByChain(chain);
+
+      const chainId = ChainToChainId[chain];
+
+      await window.xfi?.keplr?.enable(chainId);
+      // @ts-ignore
+      const offlineSigner = window.xfi?.keplr?.getOfflineSignerOnlyAmino(chainId);
+
+      const toolbox = getToolboxByChain(chain)();
+
+      const transfer = (params: {
+        from: string;
+        recipient: string;
+        assetValue: AssetValue;
+        memo: string;
+      }) => toolbox.transfer({ signer: offlineSigner, fee: 2, ...params });
 
       return {
-        ...toolbox(),
-        transfer: cosmosTransfer({
-          chainId: ChainToChainId[chain] as ChainId.Cosmos,
-          rpcUrl: ChainToRPC[chain],
-        }),
+        ...toolbox,
+
+        transfer,
       };
     }
 
@@ -93,12 +104,13 @@ async function getWalletMethodsForChain({
       return { ...toolbox, transfer: walletTransfer };
     }
 
-    case Chain.Ethereum:
-    case Chain.BinanceSmartChain:
     case Chain.Arbitrum:
+    case Chain.Avalanche:
+    case Chain.Base:
+    case Chain.BinanceSmartChain:
+    case Chain.Ethereum:
     case Chain.Optimism:
-    case Chain.Polygon:
-    case Chain.Avalanche: {
+    case Chain.Polygon: {
       const { prepareNetworkSwitch, addEVMWalletNetwork } = await import("@swapkit/helpers");
       const {
         getProvider,

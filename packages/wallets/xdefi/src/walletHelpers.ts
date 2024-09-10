@@ -2,7 +2,7 @@ import type { Keplr } from "@keplr-wallet/types";
 import {
   type AssetValue,
   Chain,
-  type ChainId,
+  ChainId,
   ChainToChainId,
   type EVMChain,
   EVMChains,
@@ -53,10 +53,11 @@ export function getXDEFIProvider<T extends Chain>(
   if (!window.xfi) throw new SwapKitError("wallet_xdefi_not_found");
 
   switch (chain) {
-    case Chain.Ethereum:
-    case Chain.Avalanche:
-    case Chain.BinanceSmartChain:
     case Chain.Arbitrum:
+    case Chain.Avalanche:
+    case Chain.Base:
+    case Chain.BinanceSmartChain:
+    case Chain.Ethereum:
     case Chain.Optimism:
     case Chain.Polygon:
       // @ts-expect-error
@@ -163,7 +164,7 @@ export async function getXDEFIAddress(chain: Chain) {
     eipProvider.request(
       { method: "request_accounts", params: [] },
       // @ts-expect-error
-      (error: Todo, [response]: string[]) => (error ? reject(error) : resolve(response)),
+      (error: any, [response]: string[]) => (error ? reject(error) : resolve(response)),
     ),
   );
 }
@@ -212,9 +213,14 @@ export function cosmosTransfer({
 }) {
   return async ({ from, recipient, assetValue, memo }: TransferParams) => {
     const { createSigningStargateClient } = await import("@swapkit/toolbox-cosmos");
+    await window.xfi?.keplr?.enable(chainId);
     // @ts-ignore
     const offlineSigner = window.xfi?.keplr?.getOfflineSignerOnlyAmino(chainId);
-    const cosmJS = await createSigningStargateClient(rpcUrl || RPCUrl.Cosmos, offlineSigner);
+    const cosmJS = await createSigningStargateClient(
+      rpcUrl || RPCUrl.Cosmos,
+      offlineSigner,
+      chainId === ChainId.Kujira ? "0.0003ukuji" : undefined,
+    );
 
     const coins = [
       {
@@ -265,7 +271,7 @@ export function getXdefiMethods(provider: BrowserProvider) {
             from,
             to,
             data: data || "0x",
-          } as Todo,
+          } as any,
         ]);
       }
       const contract = createContract(contractAddress, abi, contractProvider);
@@ -297,7 +303,7 @@ export function getXdefiMethods(provider: BrowserProvider) {
           from,
           to,
           data: data || "0x",
-        } as Todo,
+        } as any,
       ]);
     },
     sendTransaction: async (tx: EVMTxParams) => {
@@ -314,7 +320,7 @@ export function getXdefiMethods(provider: BrowserProvider) {
           from,
           to,
           data: data || "0x",
-        } as Todo,
+        } as any,
       ]);
     },
   };

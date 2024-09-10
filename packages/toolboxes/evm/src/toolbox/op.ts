@@ -8,13 +8,13 @@ import {
 } from "@swapkit/helpers";
 import type { BrowserProvider, JsonRpcProvider, Signer, TransactionRequest } from "ethers";
 
-import type { CovalentApiType } from "../api/covalentApi.ts";
-import { covalentApi } from "../api/covalentApi.ts";
-import { gasOracleAbi } from "../contracts/op/gasOracle.ts";
-import { getBalance } from "../index.ts";
+import type { CovalentApiType } from "../api/covalentApi";
+import { covalentApi } from "../api/covalentApi";
+import { gasOracleAbi } from "../contracts/op/gasOracle";
+import { getBalance } from "../index";
 
 import { Contract, Transaction } from "ethers";
-import { BaseEVMToolbox } from "./BaseEVMToolbox.ts";
+import { EVMToolbox } from "./EVMToolbox";
 
 const GAS_PRICE_ORACLE_ADDRESS = "0x420000000000000000000000000000000000000f";
 
@@ -130,7 +130,7 @@ const estimateGasPrices = async (provider: JsonRpcProvider | BrowserProvider) =>
     };
   } catch (error) {
     throw new Error(
-      `Failed to estimate gas price: ${(error as Todo).msg ?? (error as Todo).toString()}`,
+      `Failed to estimate gas price: ${(error as any).msg ?? (error as any).toString()}`,
     );
   }
 };
@@ -147,10 +147,10 @@ export const OPToolbox = ({
   provider: JsonRpcProvider | BrowserProvider;
 }) => {
   const opApi = api || covalentApi({ apiKey: covalentApiKey, chainId: ChainId.Optimism });
-  const baseToolbox = BaseEVMToolbox({ provider, signer });
+  const evmToolbox = EVMToolbox({ provider, signer });
 
   return {
-    ...baseToolbox,
+    ...evmToolbox,
     estimateTotalGasCost: (tx: TransactionRequest) => estimateTotalGasCost(provider, tx),
     estimateL1GasCost: (tx: TransactionRequest) => estimateL1GasCost(provider, tx),
     estimateL2GasCost: (tx: TransactionRequest) => estimateL2GasCost(provider, tx),

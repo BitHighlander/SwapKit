@@ -9,11 +9,12 @@ import {
   getDerivationPathFor,
   getEIP6963Wallets,
 } from "@swapkit/helpers";
-import type { EVMChain, FullWallet } from "@swapkit/sdk";
+import type { FullWallet } from "@swapkit/sdk";
 import { decryptFromKeystore } from "@swapkit/wallet-keystore";
 import { useCallback, useState } from "react";
 
 import type { Eip1193Provider } from "@swapkit/toolbox-evm";
+import { PHANTOM_SUPPORTED_CHAINS } from "@swapkit/wallet-phantom";
 import type { SwapKitClient } from "./swapKitClient";
 
 type Props = {
@@ -22,19 +23,12 @@ type Props = {
   skClient?: SwapKitClient;
 };
 
-const walletOptions = Object.values(WalletOption).filter(
-  (o) =>
-    ![
-      WalletOption.KEPLR,
-      WalletOption.EXODUS,
-      WalletOption.RADIX_WALLET,
-      WalletOption.PHANTOM,
-    ].includes(o),
-);
+const walletOptions = Object.values(WalletOption).filter((o) => ![WalletOption.EXODUS].includes(o));
 
 const AllChainsSupported = [
   Chain.Arbitrum,
   Chain.Avalanche,
+  Chain.Base,
   Chain.BinanceSmartChain,
   Chain.Bitcoin,
   Chain.BitcoinCash,
@@ -57,11 +51,11 @@ export const availableChainsByWallet = {
   [WalletOption.COINBASE_MOBILE]: EVMChains,
   [WalletOption.COINBASE_WEB]: EVMChains,
   [WalletOption.EIP6963]: EVMChains,
-  [WalletOption.KEPLR]: [Chain.Cosmos],
+  [WalletOption.KEPLR]: [Chain.Cosmos, Chain.Kujira],
   [WalletOption.LEDGER]: AllChainsSupported,
   [WalletOption.METAMASK]: EVMChains,
   [WalletOption.OKX_MOBILE]: EVMChains,
-  [WalletOption.PHANTOM]: [Chain.Solana],
+  [WalletOption.PHANTOM]: PHANTOM_SUPPORTED_CHAINS,
   [WalletOption.POLKADOT_JS]: [Chain.Polkadot],
   [WalletOption.TRUSTWALLET_WEB]: EVMChains,
   [WalletOption.XDEFI]: AllChainsSupported,
@@ -119,22 +113,21 @@ export const availableChainsByWallet = {
   [WalletOption.TALISMAN]: [
     Chain.Ethereum,
     Chain.Arbitrum,
+    Chain.Avalanche,
     Chain.Polygon,
     Chain.BinanceSmartChain,
     Chain.Optimism,
     Chain.Polkadot,
   ],
-  //   [WalletOption.EXODUS]: [
-  //     Chain.Ethereum,
-  //     Chain.BinanceSmartChain,
-  //     Chain.Polygon,
-  //     Chain.Bitcoin,
-  //   ],
+  [WalletOption.EXODUS]: [Chain.Ethereum, Chain.BinanceSmartChain, Chain.Polygon, Chain.Bitcoin],
+  [WalletOption.LEDGER_LIVE]: [],
+  [WalletOption.RADIX_WALLET]: [Chain.Radix],
 };
 
 export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
   const [loading, setLoading] = useState(false);
-  const [chains, setChains] = useState<Chain[]>([]);
+  const [chains, setChains] = useState([]);
+
   const connectWallet = useCallback(
     async (option: WalletOption, provider?: Eip1193Provider) => {
       if (!skClient) return alert("client is not ready");
@@ -148,10 +141,13 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
         case WalletOption.TALISMAN:
           // @ts-ignore
           return skClient.connectTalisman(chains);
+        case WalletOption.KEPLR:
+          // @ts-ignore
+          return skClient.connectKeplr(chains);
         case WalletOption.KEEPKEY: {
           const derivationPaths = chains.map((chain) => getDerivationPathFor({ chain, index: 0 }));
 
-          await skClient.connectKeepkey?.(chains as EVMChain[], derivationPaths);
+          await skClient.connectKeepkey?.(chains, derivationPaths);
           localStorage.setItem("keepkeyApiKey", "1234");
           return true;
         }
@@ -165,18 +161,18 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
           const connectMethod =
             WalletOption.TREZOR === option ? skClient.connectTrezor : skClient.connectLedger;
 
-          return connectMethod?.(chains as EVMChain[], getDerivationPathFor({ chain, index: 0 }));
+          return connectMethod?.(chains, getDerivationPathFor({ chain, index: 0 }));
         }
 
         case WalletOption.EXODUS:
         // @ts-ignore
         // return skClient.connectExodusWallet(chains, wallet);
         case WalletOption.COINBASE_MOBILE:
-          return skClient.connectCoinbaseWallet?.(chains as EVMChain[]);
+          return skClient.connectCoinbaseWallet?.(chains);
         case WalletOption.XDEFI:
-          return skClient.connectXDEFI?.(chains as EVMChain[]);
+          return skClient.connectXDEFI?.(chains);
         case WalletOption.OKX:
-          return skClient.connectOkx?.(chains as EVMChain[]);
+          return skClient.connectOkx?.(chains);
         case WalletOption.POLKADOT_JS:
           return skClient.connectPolkadotJs?.(chains as Chain.Polkadot[]);
 
@@ -184,7 +180,9 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
         //   return skClient.connectRadixWallet?.();
 
         case WalletOption.PHANTOM:
-          return skClient.connectPhantom?.(chains[0]);
+          return skClient.connectPhantom?.(chains);
+        case WalletOption.RADIX_WALLET:
+          return skClient.connectRadixWallet?.([Chain.Radix]);
 
         default:
           throw new Error(`Unsupported wallet option: ${option}`);
@@ -194,7 +192,7 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
   );
 
   const handleKeystoreConnection = useCallback(
-    async ({ target }: Todo) => {
+    async ({ target }: any) => {
       if (!skClient) return alert("client is not ready");
       setLoading(true);
 
@@ -253,16 +251,19 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
   );
 
   const handleChainSelect = useCallback((chain: Chain) => {
-    setChains((prev) =>
-      prev.includes(chain) ? prev.filter((c) => c !== chain) : [...prev, chain],
+    setChains(
+      (prev) =>
+        (prev.includes(chain as never)
+          ? prev.filter((c) => c !== chain)
+          : [...prev, chain]) as never,
     );
   }, []);
 
-  const handleMultipleSelect = useCallback((e: Todo) => {
-    const selectedChains = Array.from(e.target.selectedOptions).map((o: Todo) => o.value);
+  const handleMultipleSelect = useCallback((e: any) => {
+    const selectedChains = Array.from(e.target.selectedOptions).map((o: any) => o.value);
 
     if (selectedChains.length > 1) {
-      setChains(selectedChains);
+      setChains(selectedChains as never);
     }
   }, []);
 
