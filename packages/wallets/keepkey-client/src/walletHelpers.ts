@@ -3,7 +3,6 @@ import {
   type AssetValue,
   Chain,
   type ChainId,
-  ChainToChainId,
   type EVMChain,
   EVMChains,
   type FeeOption,
@@ -41,15 +40,34 @@ export type WalletTxParams = {
   gasLimit?: string | bigint | undefined;
 };
 
+export const getProviderNameFromChain = (chain: Chain): string => {
+  switch (chain) {
+    case Chain.Bitcoin:
+      return "bitcoin";
+    case Chain.BitcoinCash:
+      return "bitcoincash";
+    case Chain.Dash:
+      return "dash";
+    case Chain.Dogecoin:
+      return "dogecoin";
+    case Chain.Litecoin:
+      return "litecoin";
+    default:
+      throw new Error("Unsupported chain");
+  }
+};
+
 export function getKEEPKEYProvider<T extends Chain>(
   chain: T,
 ): T extends Chain.Solana
   ? SolanaProvider
-  : T extends Chain.Cosmos | Chain.Kujira
+  : T extends Chain.Cosmos
     ? Keplr
     : T extends EVMChain
       ? Eip1193Provider
       : undefined {
+  console.log("window: ", window);
+  console.log("window: ", window?.ethereum);
   if (!window.xfi) throw new SwapKitError("wallet_KEEPKEY_not_found");
 
   switch (chain) {
@@ -63,7 +81,7 @@ export function getKEEPKEYProvider<T extends Chain>(
       // @ts-expect-error
       return window.xfi.ethereum;
 
-    case Chain.Osmosis:
+    // case Chain.Osmosis:
     case Chain.Cosmos:
       // case Chain.Kujira:
       // @ts-expect-error
@@ -90,9 +108,9 @@ export function getKEEPKEYProvider<T extends Chain>(
     case Chain.Maya:
       // @ts-expect-error
       return window.xfi.mayachain;
-    case Chain.Solana:
-      // @ts-expect-error
-      return window.xfi.solana;
+    // case Chain.Solana:
+    //   // @ts-expect-error
+    //   return window.xfi.solana;
 
     default:
       // @ts-expect-error
@@ -122,6 +140,7 @@ async function transaction({
 }
 
 export async function getKEEPKEYAddress(chain: Chain) {
+  console.log("getKEEPKEYAddress: ", chain);
   const eipProvider = getKEEPKEYProvider(chain) as Eip1193Provider;
   if (!eipProvider) {
     throw new SwapKitError({
@@ -130,47 +149,14 @@ export async function getKEEPKEYAddress(chain: Chain) {
     });
   }
 
-  if ([Chain.Cosmos, Chain.Kujira].includes(chain)) {
-    const provider = getKEEPKEYProvider(Chain.Cosmos);
-    if (!provider || "request" in provider) {
-      throw new SwapKitError({
-        errorKey: "wallet_provider_not_found",
-        info: { wallet: WalletOption.KEEPKEY, chain },
-      });
-    }
-
-    // Enabling before using the Keplr is recommended.
-    // This method will ask the user whether to allow access if they haven't visited this website.
-    // Also, it will request that the user unlock the wallet if the wallet is locked.
-    const chainId = ChainToChainId[chain];
-    await provider.enable(chainId);
-
-    const offlineSigner = provider.getOfflineSigner(chainId);
-
-    const [item] = await offlineSigner.getAccounts();
-    return item?.address;
-  }
-
+  let method = "request_accounts";
   if (EVMChains.includes(chain as EVMChain)) {
-    const [response] = await eipProvider.request({ method: "eth_requestAccounts", params: [] });
-
-    return response;
+    method = "eth_requestAccounts";
   }
 
-  if (chain === Chain.Solana) {
-    const provider = getKEEPKEYProvider(Chain.Solana);
+  const [response] = await eipProvider.request({ method, params: [] });
 
-    const accounts = await provider.connect();
-    return accounts.publicKey.toString();
-  }
-
-  return new Promise((resolve, reject) =>
-    eipProvider.request(
-      { method: "request_accounts", params: [] },
-      // @ts-expect-error
-      (error: Todo, [response]: string[]) => (error ? reject(error) : resolve(response)),
-    ),
-  );
+  return response;
 }
 
 export async function walletTransfer(

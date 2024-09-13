@@ -1,4 +1,5 @@
 import {
+  AssetValue,
   Chain,
   type ChainId,
   ChainToChainId,
@@ -19,6 +20,7 @@ import {
   getKEEPKEYAddress,
   getKEEPKEYMethods,
   getKEEPKEYProvider,
+  getProviderNameFromChain,
   walletTransfer,
 } from "./walletHelpers.ts";
 
@@ -48,12 +50,6 @@ async function getWalletMethodsForChain({
   ethplorerApiKey,
 }: ConnectConfig & { chain: (typeof KEEPKEY_SUPPORTED_CHAINS)[number] }) {
   switch (chain) {
-    case Chain.Solana: {
-      const { SOLToolbox } = await import("@swapkit/toolbox-solana");
-
-      return { ...SOLToolbox(), transfer: walletTransfer };
-    }
-
     case Chain.Maya:
     case Chain.THORChain: {
       const { getToolboxByChain, THORCHAIN_GAS_VALUE, MAYA_GAS_VALUE } = await import(
@@ -84,6 +80,7 @@ async function getWalletMethodsForChain({
       };
     }
 
+    case Chain.Dash:
     case Chain.Bitcoin:
     case Chain.BitcoinCash:
     case Chain.Dogecoin:
@@ -91,7 +88,21 @@ async function getWalletMethodsForChain({
       const { getToolboxByChain } = await import("@swapkit/toolbox-utxo");
       const toolbox = getToolboxByChain(chain)({ apiKey: blockchairApiKey });
 
-      return { ...toolbox, transfer: walletTransfer };
+      const getBalance = async () => {
+        try {
+          const providerChain = getProviderNameFromChain(chain); // Use the new helper function
+          const balance = await window?.xfi?.[providerChain]?.request({
+            method: "request_balance",
+          });
+          const assetValue = AssetValue.fromChainOrSignature(chain, balance[0].balance);
+          return [assetValue]; // or return processedBalance if you process it
+        } catch (error) {
+          console.error("Error fetching balance:", error);
+          throw error;
+        }
+      };
+
+      return { ...toolbox, getBalance, transfer: walletTransfer };
     }
 
     case Chain.Ethereum:
@@ -154,14 +165,14 @@ async function getWalletMethodsForChain({
           ...toolbox,
           ...keepkeyMethods,
           // @TODO this only here because bug in xdefi? removeme?
-          getBalance: (address: string, potentialScamFilter?: boolean) =>
-            getBalance({
-              chain,
-              provider: getProvider(chain),
-              api,
-              address,
-              potentialScamFilter,
-            }),
+          // getBalance: (address: string, potentialScamFilter?: boolean) =>
+          //   getBalance({
+          //     chain,
+          //     provider: getProvider(chain),
+          //     api,
+          //     address,
+          //     potentialScamFilter,
+          //   }),
         },
       });
     }
