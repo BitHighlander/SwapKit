@@ -25,6 +25,7 @@ export enum WalletOption {
   EIP6963 = "EIP6963",
   EXODUS = "EXODUS",
   KEEPKEY = "KEEPKEY",
+  KEEPKEY_BEX = "KEEPKEY_BEX",
   KEPLR = "KEPLR",
   KEYSTORE = "KEYSTORE",
   LEDGER = "LEDGER",
