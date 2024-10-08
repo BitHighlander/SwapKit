@@ -163,7 +163,7 @@ async function getWalletMethodsForChain({
         chainId: ChainToHexChainId[chain],
         toolbox: {
           ...toolbox,
-          ...keepkeyMethods
+          ...keepkeyMethods,
         },
       });
     }

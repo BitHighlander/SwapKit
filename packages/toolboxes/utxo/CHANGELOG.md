@@ -1,5 +1,26 @@
 # @swapkit/toolbox-utxo
 
+## 1.1.19
+
+### Patch Changes
+
+- Updated dependencies [[`3fd3165`](https://github.com/thorswap/SwapKit/commit/3fd316566d4e259b5f0465407c6b01d928088ff7)]:
+  - @swapkit/helpers@1.11.2
+
+## 1.1.18
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.11.1
+
+## 1.1.17
+
+### Patch Changes
+
+- Updated dependencies [[`2008496`](https://github.com/thorswap/SwapKit/commit/2008496df4d52faa790a84e85b72752aa09eec17)]:
+  - @swapkit/helpers@1.11.0
+
 ## 1.1.16
 
 ### Patch Changes

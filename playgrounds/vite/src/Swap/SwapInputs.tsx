@@ -21,7 +21,6 @@ export const SwapInputs = ({ skClient, inputAsset, outputAsset, handleSwap }: Pr
     (amountValue: string) => {
       if (!inputAsset) return;
 
-      // ... LoL
       const amount = inputAsset.mul(0).add(amountValue);
       setInput(amount.gt(inputAsset) ? inputAsset : amount);
     },
@@ -36,7 +35,6 @@ export const SwapInputs = ({ skClient, inputAsset, outputAsset, handleSwap }: Pr
 
     const sourceAddress = skClient.getAddress(inputAsset.chain);
     const destinationAddress = skClient.getAddress(outputAsset.chain);
-    // const providers = Object.values(ProviderName);
 
     try {
       const { routes } = await SwapKitApi.getSwapQuoteV2(
@@ -64,7 +62,6 @@ export const SwapInputs = ({ skClient, inputAsset, outputAsset, handleSwap }: Pr
       });
 
       setFeeBestRoute(fee);
-
       setRoutes(routes || []);
     } finally {
       setLoading(false);
@@ -72,18 +69,43 @@ export const SwapInputs = ({ skClient, inputAsset, outputAsset, handleSwap }: Pr
   }, [inputAssetValue, inputAsset, outputAsset, skClient]);
 
   const swap = async (route: QuoteResponseRoute, inputAssetValue?: AssetValue) => {
-    if (!(inputAsset && outputAsset && inputAssetValue && skClient)) return;
+    console.log("swap pressed");
+    if (!(inputAsset && outputAsset && inputAssetValue && skClient)) {
+      console.error("Failed to swap: missing inputAsset, outputAsset, inputAssetValue or skClient");
+      return;
+    }
     const isChainFlip = route?.providers?.includes(ProviderName.CHAINFLIP);
     if (isChainFlip) {
       await handleSwap(route, useChainflipBoost);
       return;
     }
+    console.log("route:", route);
+    console.log("route.tx:", route.tx);
+    if (route?.tx?.from || true) {
+      // const fromAddress = route.tx.from;
+      // console.log("From Address:", fromAddress);
+      //
+      // const isApproved = await skClient.isAssetValueApproved(inputAssetValue, fromAddress);
+      // console.log("Is Asset Approved:", isApproved);
+      const isApproved = true;
+      const fromAddress = "0x";
 
-    route.tx?.from && (await skClient.isAssetValueApproved(inputAssetValue, route.tx?.from))
-      ? handleSwap(route, false)
-      : route.tx?.from
-        ? skClient.approveAssetValue(inputAssetValue, route.tx?.from)
-        : new Error("Approval Spender not found");
+      if (isApproved || true) {
+        console.log("Asset is already approved, proceeding to handle swap.");
+        await handleSwap(route, false);
+      } else {
+        console.log("Asset is not approved, attempting to approve asset.");
+        try {
+          await skClient.approveAssetValue(inputAssetValue, fromAddress);
+          console.log("Asset approval successful.");
+        } catch (error) {
+          console.error("Asset approval failed:", error);
+        }
+      }
+    } else {
+      console.error("Approval Spender not found");
+      throw new Error("Approval Spender not found");
+    }
   };
 
   return (
@@ -119,11 +141,10 @@ export const SwapInputs = ({ skClient, inputAsset, outputAsset, handleSwap }: Pr
         <div>
           <div>
             <span>Routes:</span>
-            {routes.map((route) => (
-              <div key={route.targetAddress}>
-                {/* {route.meta?.} ({route.providers.join(",")}){" "} */}
+            {routes.map((route, index) => (
+              <div key={`${route.targetAddress}-${index}`}>
                 {route?.providers?.includes(ProviderName.CHAINFLIP) && (
-                  <div>
+                  <div key={`${route.targetAddress}-${index}-chainflip`}>
                     <label>
                       <input
                         type="checkbox"

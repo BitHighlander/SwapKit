@@ -1,5 +1,54 @@
 # @swapkit/wallet-xdefi
 
+## 1.1.19
+
+### Patch Changes
+
+- Updated dependencies [[`3fd3165`](https://github.com/thorswap/SwapKit/commit/3fd316566d4e259b5f0465407c6b01d928088ff7)]:
+  - @swapkit/toolbox-solana@1.1.9
+  - @swapkit/helpers@1.11.2
+  - @swapkit/toolbox-cosmos@1.3.9
+  - @swapkit/toolbox-evm@1.5.2
+  - @swapkit/toolbox-utxo@1.1.19
+
+## 1.1.18
+
+### Patch Changes
+
+- Updated dependencies [[`87ecb76`](https://github.com/thorswap/SwapKit/commit/87ecb76f7c8975f26f6d45b5804d3ac68098ffcf)]:
+  - @swapkit/toolbox-solana@1.1.8
+  - @swapkit/helpers@1.11.1
+
+## 1.1.17
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.11.1
+  - @swapkit/toolbox-cosmos@1.3.8
+  - @swapkit/toolbox-evm@1.5.1
+  - @swapkit/toolbox-solana@1.1.7
+  - @swapkit/toolbox-utxo@1.1.18
+
+## 1.1.16
+
+### Patch Changes
+
+- Updated dependencies [[`3148573`](https://github.com/thorswap/SwapKit/commit/3148573c09d120c350c34444aed1e6b1a8fe16ad)]:
+  - @swapkit/toolbox-solana@1.1.6
+  - @swapkit/helpers@1.11.0
+
+## 1.1.15
+
+### Patch Changes
+
+- Updated dependencies [[`2008496`](https://github.com/thorswap/SwapKit/commit/2008496df4d52faa790a84e85b72752aa09eec17)]:
+  - @swapkit/helpers@1.11.0
+  - @swapkit/toolbox-evm@1.5.0
+  - @swapkit/toolbox-cosmos@1.3.7
+  - @swapkit/toolbox-solana@1.1.5
+  - @swapkit/toolbox-utxo@1.1.17
+
 ## 1.1.14
 
 ### Patch Changes

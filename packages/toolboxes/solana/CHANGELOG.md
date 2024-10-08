@@ -1,5 +1,46 @@
 # @swapkit/toolbox-solana
 
+## 1.1.9
+
+### Patch Changes
+
+- [`3fd3165`](https://github.com/thorswap/SwapKit/commit/3fd316566d4e259b5f0465407c6b01d928088ff7) Thanks [@towanTG](https://github.com/towanTG)! - Fixes chainflip sol transfer params and phantom transfer
+
+- Updated dependencies [[`3fd3165`](https://github.com/thorswap/SwapKit/commit/3fd316566d4e259b5f0465407c6b01d928088ff7)]:
+  - @swapkit/helpers@1.11.2
+
+## 1.1.8
+
+### Patch Changes
+
+- [`87ecb76`](https://github.com/thorswap/SwapKit/commit/87ecb76f7c8975f26f6d45b5804d3ac68098ffcf) Thanks [@towanTG](https://github.com/towanTG)! - Exports sol validate address and implements it in core
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.11.1
+
+## 1.1.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.11.1
+
+## 1.1.6
+
+### Patch Changes
+
+- [#1008](https://github.com/thorswap/SwapKit/pull/1008) [`3148573`](https://github.com/thorswap/SwapKit/commit/3148573c09d120c350c34444aed1e6b1a8fe16ad) Thanks [@towanTG](https://github.com/towanTG)! - Fixes chainflip asset ticker and solana get balance
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.11.0
+
+## 1.1.5
+
+### Patch Changes
+
+- Updated dependencies [[`2008496`](https://github.com/thorswap/SwapKit/commit/2008496df4d52faa790a84e85b72752aa09eec17)]:
+  - @swapkit/helpers@1.11.0
+
 ## 1.1.4
 
 ### Patch Changes

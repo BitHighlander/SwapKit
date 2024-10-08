@@ -1,5 +1,30 @@
 # @swapkit/toolbox-evm
 
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies [[`3fd3165`](https://github.com/thorswap/SwapKit/commit/3fd316566d4e259b5f0465407c6b01d928088ff7)]:
+  - @swapkit/helpers@1.11.2
+
+## 1.5.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@1.11.1
+
+## 1.5.0
+
+### Minor Changes
+
+- [#1006](https://github.com/thorswap/SwapKit/pull/1006) [`2008496`](https://github.com/thorswap/SwapKit/commit/2008496df4d52faa790a84e85b72752aa09eec17) Thanks [@towanTG](https://github.com/towanTG)! - Adds Chainflip SDK like deposit channel endpoint support
+
+### Patch Changes
+
+- Updated dependencies [[`2008496`](https://github.com/thorswap/SwapKit/commit/2008496df4d52faa790a84e85b72752aa09eec17)]:
+  - @swapkit/helpers@1.11.0
+
 ## 1.4.4
 
 ### Patch Changes

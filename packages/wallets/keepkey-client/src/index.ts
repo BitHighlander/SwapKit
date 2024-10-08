@@ -1,4 +1,3 @@
-import type { Keplr } from "@keplr-wallet/types";
 import type { Eip1193Provider } from "@swapkit/toolbox-evm";
 
 export { keepkeyBexWallet } from "./keepkeyWallet.ts";

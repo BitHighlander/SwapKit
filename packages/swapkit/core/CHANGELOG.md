@@ -1,5 +1,68 @@
 # @swapkit/core
 
+## 1.4.9
+
+### Patch Changes
+
+- Updated dependencies [[`3fd3165`](https://github.com/thorswap/SwapKit/commit/3fd316566d4e259b5f0465407c6b01d928088ff7)]:
+  - @swapkit/toolbox-solana@1.1.9
+  - @swapkit/helpers@1.11.2
+  - @swapkit/plugin-evm@1.1.21
+  - @swapkit/api@1.8.3
+  - @swapkit/toolbox-cosmos@1.3.9
+  - @swapkit/toolbox-evm@1.5.2
+  - @swapkit/toolbox-radix@1.2.6
+  - @swapkit/toolbox-substrate@1.2.14
+  - @swapkit/toolbox-utxo@1.1.19
+
+## 1.4.8
+
+### Patch Changes
+
+- [`87ecb76`](https://github.com/thorswap/SwapKit/commit/87ecb76f7c8975f26f6d45b5804d3ac68098ffcf) Thanks [@towanTG](https://github.com/towanTG)! - Exports sol validate address and implements it in core
+
+- Updated dependencies [[`87ecb76`](https://github.com/thorswap/SwapKit/commit/87ecb76f7c8975f26f6d45b5804d3ac68098ffcf)]:
+  - @swapkit/toolbox-solana@1.1.8
+  - @swapkit/helpers@1.11.1
+
+## 1.4.7
+
+### Patch Changes
+
+- Updated dependencies [[`2e459bf`](https://github.com/thorswap/SwapKit/commit/2e459bf8ecb386c59c614946cba9b1c624c8d4f8)]:
+  - @swapkit/toolbox-substrate@1.2.13
+  - @swapkit/helpers@1.11.1
+  - @swapkit/plugin-evm@1.1.20
+  - @swapkit/api@1.8.2
+  - @swapkit/toolbox-cosmos@1.3.8
+  - @swapkit/toolbox-evm@1.5.1
+  - @swapkit/toolbox-radix@1.2.5
+  - @swapkit/toolbox-solana@1.1.7
+  - @swapkit/toolbox-utxo@1.1.18
+
+## 1.4.6
+
+### Patch Changes
+
+- Updated dependencies [[`3148573`](https://github.com/thorswap/SwapKit/commit/3148573c09d120c350c34444aed1e6b1a8fe16ad)]:
+  - @swapkit/toolbox-solana@1.1.6
+  - @swapkit/helpers@1.11.0
+
+## 1.4.5
+
+### Patch Changes
+
+- Updated dependencies [[`2008496`](https://github.com/thorswap/SwapKit/commit/2008496df4d52faa790a84e85b72752aa09eec17)]:
+  - @swapkit/helpers@1.11.0
+  - @swapkit/toolbox-evm@1.5.0
+  - @swapkit/plugin-evm@1.1.19
+  - @swapkit/api@1.8.1
+  - @swapkit/toolbox-cosmos@1.3.7
+  - @swapkit/toolbox-radix@1.2.4
+  - @swapkit/toolbox-solana@1.1.5
+  - @swapkit/toolbox-substrate@1.2.12
+  - @swapkit/toolbox-utxo@1.1.17
+
 ## 1.4.4
 
 ### Patch Changes
