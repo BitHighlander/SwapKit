@@ -35,6 +35,7 @@ export enum WalletOption {
   KEEPKEY_BEX = "KEEPKEY_BEX",
   KEPLR = "KEPLR",
   KEYSTORE = "KEYSTORE",
+  LEAP = "LEAP",
   LEDGER = "LEDGER",
   LEDGER_LIVE = "LEDGER_LIVE",
   METAMASK = "METAMASK",

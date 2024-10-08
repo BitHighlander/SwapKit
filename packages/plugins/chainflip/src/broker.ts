@@ -68,16 +68,15 @@ const encodeChainflipAddress =
     }
   };
 
-const registerAsBroker =
-  (toolbox: Awaited<ReturnType<typeof ChainflipToolbox>>) => (address: string) => {
-    const extrinsic = toolbox.api.tx.swapping?.registerAsBroker?.(address);
+const registerAsBroker = (toolbox: Awaited<ReturnType<typeof ChainflipToolbox>>) => () => {
+  const extrinsic = toolbox.api.tx.swapping?.registerAsBroker?.();
 
-    if (!extrinsic) {
-      throw new SwapKitError("chainflip_broker_register");
-    }
+  if (!extrinsic) {
+    throw new SwapKitError("chainflip_broker_register");
+  }
 
-    return toolbox.signAndBroadcast(extrinsic);
-  };
+  return toolbox.signAndBroadcast(extrinsic);
+};
 
 const requestSwapDepositAddress =
   (toolbox: Awaited<ReturnType<typeof ChainflipToolbox>>) =>
@@ -225,13 +224,17 @@ const fundStateChainAccount =
   ({
     evmToolbox,
     stateChainAccount,
-    amount,
+    assetValue,
   }: {
     evmToolbox: ReturnType<typeof ETHToolbox>;
     stateChainAccount: string;
-    amount: AssetValue;
+    assetValue: AssetValue;
   }) => {
-    if (amount.symbol !== "FLIP") {
+    const flipAssetValue = AssetValue.from({
+      asset: "ETH.FLIP-0x826180541412D574cf1336d22c0C0a287822678A",
+    });
+
+    if (!assetValue.eqAsset(flipAssetValue)) {
       throw new SwapKitError("chainflip_broker_fund_only_flip_supported");
     }
 
@@ -247,7 +250,7 @@ const fundStateChainAccount =
       abi: chainflipGateway,
       contractAddress: "0x6995ab7c4d7f4b03f467cf4c8e920427d9621dbd",
       funcName: "fundStateChainAccount",
-      funcParams: [hexAddress, amount],
+      funcParams: [hexAddress, assetValue.getBaseValue("string")],
     });
   };
 

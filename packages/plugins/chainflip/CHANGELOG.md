@@ -1,5 +1,59 @@
 # @swapkit/plugin-chainflip
 
+## 1.3.13
+
+### Patch Changes
+
+- [#1024](https://github.com/thorswap/SwapKit/pull/1024) [`031a8c6`](https://github.com/thorswap/SwapKit/commit/031a8c6d4b1ad43465a20bc76246aa0e31b81db0) Thanks [@0xepicode](https://github.com/0xepicode)! - Fixed funding chainglip account
+
+- Updated dependencies [[`ce2e5f9`](https://github.com/thorswap/SwapKit/commit/ce2e5f997ec06d8f6553559ffc6781935f59cd41), [`031a8c6`](https://github.com/thorswap/SwapKit/commit/031a8c6d4b1ad43465a20bc76246aa0e31b81db0)]:
+  - @swapkit/helpers@1.12.1
+  - @swapkit/toolbox-evm@1.5.4
+  - @swapkit/api@1.9.2
+  - @swapkit/toolbox-substrate@1.2.16
+  - @swapkit/toolbox-utxo@1.1.21
+
+## 1.3.12
+
+### Patch Changes
+
+- [#1022](https://github.com/thorswap/SwapKit/pull/1022) [`d957c41`](https://github.com/thorswap/SwapKit/commit/d957c41f76d76627633c33ea245d3efa21ce3b8b) Thanks [@0xepicode](https://github.com/0xepicode)! - Fixed funding chainflip state account
+
+## 1.3.11
+
+### Patch Changes
+
+- [#1020](https://github.com/thorswap/SwapKit/pull/1020) [`2634bd6`](https://github.com/thorswap/SwapKit/commit/2634bd644023daff0ad29de9f9f058eaf72ea70d) Thanks [@towanTG](https://github.com/towanTG)! - Adds leap wallet support
+
+- Updated dependencies [[`0342f89`](https://github.com/thorswap/SwapKit/commit/0342f89898f7ab25f3dd152d878cb7e7a3291424), [`2634bd6`](https://github.com/thorswap/SwapKit/commit/2634bd644023daff0ad29de9f9f058eaf72ea70d)]:
+  - @swapkit/helpers@1.12.0
+  - @swapkit/api@1.9.1
+  - @swapkit/toolbox-evm@1.5.3
+  - @swapkit/toolbox-substrate@1.2.15
+  - @swapkit/toolbox-utxo@1.1.20
+
+## 1.3.10
+
+### Patch Changes
+
+- [`d946d06`](https://github.com/thorswap/SwapKit/commit/d946d06bba6b867fdb254e91564ca161307c3216) Thanks [@towanTG](https://github.com/towanTG)! - Fixes Chainflip config usage
+
+## 1.3.9
+
+### Patch Changes
+
+- Updated dependencies [[`0c4230b`](https://github.com/thorswap/SwapKit/commit/0c4230b8adbf27a9f165202cd84aeebf5dc6cf15)]:
+  - @swapkit/api@1.9.0
+  - @swapkit/helpers@1.11.2
+
+## 1.3.8
+
+### Patch Changes
+
+- Updated dependencies [[`1c4facf`](https://github.com/thorswap/SwapKit/commit/1c4facf880251ff3e6496f6c8a21a9379793b31f)]:
+  - @swapkit/api@1.8.4
+  - @swapkit/helpers@1.11.2
+
 ## 1.3.7
 
 ### Patch Changes

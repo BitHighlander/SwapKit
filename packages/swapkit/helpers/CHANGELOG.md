@@ -1,5 +1,21 @@
 # @swapkit/helpers
 
+## 1.12.1
+
+### Patch Changes
+
+- [#1026](https://github.com/thorswap/SwapKit/pull/1026) [`ce2e5f9`](https://github.com/thorswap/SwapKit/commit/ce2e5f997ec06d8f6553559ffc6781935f59cd41) Thanks [@towanTG](https://github.com/towanTG)! - Keeps Sol address case sensitive
+
+## 1.12.0
+
+### Minor Changes
+
+- [#1020](https://github.com/thorswap/SwapKit/pull/1020) [`2634bd6`](https://github.com/thorswap/SwapKit/commit/2634bd644023daff0ad29de9f9f058eaf72ea70d) Thanks [@towanTG](https://github.com/towanTG)! - Adds leap wallet support
+
+### Patch Changes
+
+- [`0342f89`](https://github.com/thorswap/SwapKit/commit/0342f89898f7ab25f3dd152d878cb7e7a3291424) Thanks [@towanTG](https://github.com/towanTG)! - Enables and fixes Chainflip and Polkadot for Keystore
+
 ## 1.11.2
 
 ### Patch Changes
