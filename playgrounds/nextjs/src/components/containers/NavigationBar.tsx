@@ -1,5 +1,6 @@
-"use client"
-import { useState, useCallback } from "react";
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
@@ -11,14 +12,15 @@ import {
 import { useSwapKit } from "~/lib/swapKit";
 import { cn } from "~/lib/utils";
 import { ChainCheckbox } from "../wallets/ChainCheckbox";
-import { availableChainsByWallet, AllChains } from "../wallets/walletChains";
+import {
+    availableChainsByWallet,
+    AllChains,
+} from "../wallets/walletChains";
 import { Chain, WalletOption } from "@swapkit/helpers";
-import { Power, PowerOff } from "lucide-react";
+import { Power, PowerOff, Loader } from "lucide-react";
 import { Button } from "../ui/button";
 import AvailableWallets from "../wallets/AvailableWallets";
-
-// Define KEEPKEY_BEX option
-const KEEPKEY_BEX: WalletOption = "KEEPKEY_BEX"; // Ensure this matches your implementation
+import * as Dialog from "@radix-ui/react-dialog";
 
 const items = [
     { name: "Swap", href: "/" },
@@ -30,8 +32,16 @@ interface NavigationBarProps extends React.HTMLAttributes<HTMLDivElement> {}
 const NavigationBar = ({ className, ...props }: NavigationBarProps) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedChains, setSelectedChains] = useState<Chain[]>([]);
-    const { walletType, disconnectWallet, isWalletConnected, connectWallet } = useSwapKit();
+    const {
+        walletType,
+        disconnectWallet,
+        isWalletConnected,
+        connectWallet,
+    } = useSwapKit();
     const pathname = usePathname();
+    const [isConnecting, setIsConnecting] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [walletBalance, setWalletBalance] = useState<number | null>(null);
 
     const handleChainSelect = (chain: Chain) => (checked: boolean) => {
         setSelectedChains((prev) =>
@@ -39,50 +49,63 @@ const NavigationBar = ({ className, ...props }: NavigationBarProps) => {
         );
     };
 
-    const checkWalletDisabled = useCallback(
-        (option: WalletOption) => {
-            const allowedChains = availableChainsByWallet[option];
-            if (!allowedChains?.length || !selectedChains?.length) return false;
-            return !selectedChains.every((chain) => allowedChains.includes(chain));
-        },
-        [selectedChains]
-    );
+    const checkWalletDisabled = (option: WalletOption) => {
+        const allowedChains = availableChainsByWallet[option];
+        if (!allowedChains?.length || !selectedChains?.length) return false;
+        return !selectedChains.every((chain) => allowedChains.includes(chain));
+    };
 
-    // Make handleWalletSelect async, add logs
-    const handleWalletSelect = useCallback(
-        async (option: WalletOption) => {
-            console.log(`Wallet selection started for: ${option}`);
-            setIsDropdownOpen(false);
-            const allowedChains = availableChainsByWallet[option];
+    const handleWalletSelect = async (option: WalletOption) => {
+        console.log(`Wallet selection started for: ${option}`);
+        setIsDropdownOpen(false);
+        setIsConnecting(true); // Start spinner
 
-            if (!allowedChains.length || checkWalletDisabled(option)) {
-                console.log(`Wallet ${option} is disabled or no allowed chains.`);
-                return;
-            }
+        const allowedChains = availableChainsByWallet[option];
+        if (!allowedChains.length || checkWalletDisabled(option)) {
+            console.log(`Wallet ${option} is disabled or no allowed chains.`);
+            setIsConnecting(false);
+            return;
+        }
 
-            if (selectedChains.length === 0) {
-                console.log(`No chains selected. Setting default chains for ${option}`);
-                setSelectedChains(allowedChains);
-            }
+        // Update selected chains if no chains are selected
+        if (selectedChains.length === 0) {
+            console.log(`No chains selected. Setting default chains for ${option}`);
+            setSelectedChains(allowedChains);
+            await new Promise((resolve) => setTimeout(resolve, 0)); // Ensure state is updated
+        }
 
-            if (isWalletConnected) {
-                console.log("Disconnecting current wallet...");
-                await disconnectWallet();
-                console.log("Disconnected wallet.");
-            } else {
-                console.log(`Connecting to wallet ${option} with chains:`, selectedChains);
+        // Log selected chains to debug
+        console.log(`Connecting to wallet ${option} with chains:`, selectedChains);
+
+        if (isWalletConnected) {
+            console.log("Disconnecting current wallet...");
+            await disconnectWallet();
+            console.log("Disconnected wallet.");
+        } else {
+            try {
+                console.log(
+                    `Connecting to wallet ${option} with chains:`,
+                    selectedChains
+                );
                 await connectWallet(option, selectedChains);
                 console.log(`Connected to wallet ${option}.`);
+
+                // Fetch wallet balance here after connecting
+                const balance = await fetchWalletBalance(option); // Implement fetchWalletBalance
+                setWalletBalance(balance); // Update state with balance
+                setIsModalOpen(true); // Show modal
+            } catch (error) {
+                console.error("Error connecting to wallet:", error);
             }
-        },
-        [
-            checkWalletDisabled,
-            isWalletConnected,
-            disconnectWallet,
-            connectWallet,
-            selectedChains,
-        ]
-    );
+        }
+
+        setIsConnecting(false); // Stop spinner
+    };
+
+    const fetchWalletBalance = async (option: WalletOption): Promise<number> => {
+        // Implement actual logic to fetch wallet balance
+        return 100.0; // Example balance
+    };
 
     return (
         <ScrollArea className="max-w-[600px] lg:max-w-none pt-4 mb-4 border-b">
@@ -104,16 +127,30 @@ const NavigationBar = ({ className, ...props }: NavigationBarProps) => {
                     ))}
                 </div>
 
-                <DropdownMenu onOpenChange={setIsDropdownOpen} open={isDropdownOpen}>
+                <DropdownMenu
+                    onOpenChange={setIsDropdownOpen}
+                    open={isDropdownOpen}
+                >
                     {isWalletConnected ? (
-                        <Button onClick={disconnectWallet} variant="ghost" className="space-x-2">
+                        <Button
+                            onClick={disconnectWallet}
+                            variant="ghost"
+                            className="space-x-2"
+                        >
                             <PowerOff size={18} className="text-red-400" />
                             <span>{`Disconnect (${walletType})`}</span>
                         </Button>
                     ) : (
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="space-x-2">
-                                <Power size={18} className="text-slate-400" />
+                                {isConnecting ? (
+                                    <Loader
+                                        size={18}
+                                        className="animate-spin text-slate-400"
+                                    />
+                                ) : (
+                                    <Power size={18} className="text-slate-400" />
+                                )}
                                 <span>Connect Wallet</span>
                             </Button>
                         </DropdownMenuTrigger>
@@ -124,25 +161,41 @@ const NavigationBar = ({ className, ...props }: NavigationBarProps) => {
                             onWalletSelect={handleWalletSelect}
                             checkWalletDisabled={checkWalletDisabled}
                         />
-
-                        {/* Chain checkboxes */}
-                        <div className="p-4 bg-slate-800">
-                            <div className="flex flex-row flex-wrap gap-3">
-                                {AllChains.map((chain) => (
-                                    <ChainCheckbox
-                                        key={chain}
-                                        chain={chain}
-                                        checked={selectedChains.includes(chain)}
-                                        onCheckedChange={handleChainSelect(chain)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
 
             <ScrollBar orientation="horizontal" className="invisible" />
+
+            {/* Radix Modal */}
+            <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+
+                <Dialog.Content
+                    className="fixed top-1/2 left-1/2 max-w-md w-full bg-gray-900 p-6 rounded-2xl transform -translate-x-1/2 -translate-y-1/2 shadow-xl"
+                >
+                    <Dialog.Title className="text-xl font-semibold text-white">
+                        Wallet Connected
+                    </Dialog.Title>
+                    <Dialog.Description className="mt-2 text-gray-300">
+                        Your wallet has been successfully connected.
+                    </Dialog.Description>
+                    <div className="mt-4">
+                        <p className="text-lg text-white">
+                            Your balance is{" "}
+                            <span className="font-bold">{walletBalance} ETH</span>.
+                        </p>
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                        <Button
+                            onClick={() => setIsModalOpen(false)}
+                            className="rounded-full px-6 py-2"
+                        >
+                            Close
+                        </Button>
+                    </div>
+                </Dialog.Content>
+            </Dialog.Root>
         </ScrollArea>
     );
 };
