@@ -1,8 +1,8 @@
 import { type AssetValue, type Chain, WalletOption } from "@swapkit/helpers";
-
 import { atom, useAtom } from "jotai";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 
+const TAG = " | swapKit | "
 const swapKitAtom = atom<any | null>(null);
 const balanceAtom = atom<AssetValue[]>([]);
 const walletState = atom<{ connected: boolean; type: WalletOption | null }>({
@@ -21,13 +21,14 @@ export const useSwapKit = () => {
       const { ChainflipPlugin } = await import("@swapkit/plugin-chainflip");
       const { ThorchainPlugin, MayachainPlugin } = await import("@swapkit/plugin-thorchain");
       const { wallets } = await import("@swapkit/wallets");
-      console.log('wallets', wallets)
+      console.log('wallets', wallets);
+
       const swapKitClient = SwapKit({
         config: {
           blockchairApiKey:
-            process.env.NEXT_PUBLIC_BLOCKCHAIR_API_KEY || "A___Tcn5B16iC3mMj7QrzZCb2Ho1QBUf",
+              process.env.NEXT_PUBLIC_BLOCKCHAIR_API_KEY || "A___Tcn5B16iC3mMj7QrzZCb2Ho1QBUf",
           covalentApiKey:
-            process.env.NEXT_PUBLIC_COVALENT_API_KEY || "cqt_rQ6333MVWCVJFVX3DbCCGMVqRH4q",
+              process.env.NEXT_PUBLIC_COVALENT_API_KEY || "cqt_rQ6333MVWCVJFVX3DbCCGMVqRH4q",
           ethplorerApiKey: process.env.NEXT_PUBLIC_ETHPLORER_API_KEY || "freekey",
           walletConnectProjectId: "",
           keepkeyConfig: {
@@ -50,64 +51,60 @@ export const useSwapKit = () => {
     loadSwapKit();
   }, [setSwapKit]);
 
-  const getBalances = useCallback(
-    async (refresh?: boolean) => {
-      if (!refresh && balances.length) return;
+  const getBalances = async (refresh?: boolean) => {
+    let tag = TAG + " | getBalances | ";
+    if (!refresh && balances.length) return;
+    console.log(tag, 'balances: ', balances);
 
-      const connectedChains =
+    console.log(tag, 'swapKit: ', swapKit);
+    const connectedChains =
         (Object.keys(swapKit?.connectedChains || {}).filter(Boolean) as Chain[]) || [];
+    console.log(tag, 'connectedChains: ', connectedChains);
 
-      let nextBalances: AssetValue[] = [];
+    let nextBalances: AssetValue[] = [];
 
-      for (const chain of connectedChains) {
-        const balance = await swapKit?.getBalance(chain);
-
-        if (balance) {
-          nextBalances = nextBalances.concat(balance);
-        }
+    for (const chain of connectedChains) {
+      const balance = await swapKit?.getBalance(chain);
+      console.log(chain+' balance: ', balance);
+      if (balance) {
+        nextBalances = nextBalances.concat(balance);
       }
+    }
 
-      setBalances(nextBalances.sort((a, b) => a.getValue("number") - b.getValue("number")));
-    },
-    [swapKit, setBalances, balances],
-  );
+    setBalances(nextBalances.sort((a, b) => a.getValue("number") - b.getValue("number")));
+  };
 
-  const connectWallet = useCallback(
-    (option: WalletOption, chains: Chain[]) => {
-      switch (option) {
-        case WalletOption.XDEFI: {
-          swapKit?.connectXDEFI(chains);
-          break;
-        }
-        case WalletOption.KEEPKEY_BEX: {
-          console.log('chains', chains)
-          swapKit?.connectKeepkeyBex(chains);
-          break;
-        }
-        default:
-          throw Error('Unhandled wallet option'+option+'!')
-          break;
+  const connectWallet = (option: WalletOption, chains: Chain[]) => {
+    switch (option) {
+      case WalletOption.XDEFI: {
+        swapKit?.connectXDEFI(chains);
+        break;
       }
+      case WalletOption.KEEPKEY_BEX: {
+        console.log('chains', chains);
+        swapKit?.connectKeepkeyBex(chains);
+        break;
+      }
+      default:
+        throw Error('Unhandled wallet option' + option + '!');
+    }
 
-      setWalletState({ connected: !!swapKit?.getAddress(chains[0]), type: option });
+    setWalletState({ connected: !!swapKit?.getAddress(chains[0]), type: option });
 
-      getBalances();
-    },
-    [setWalletState, getBalances, swapKit],
-  );
+    getBalances();
+  };
 
-  const disconnectWallet = useCallback(() => {
+  const disconnectWallet = () => {
     for (const chain of Object.keys(swapKit?.connectedChains || {})) {
       swapKit?.disconnectChain(chain as Chain);
     }
 
     setWalletState({ connected: false, type: null });
-  }, [setWalletState, swapKit]);
+  };
 
-  const checkIfChainConnected = useCallback(
-    (chain: Chain) => !!swapKit?.getAddress(chain),
-    [swapKit?.getAddress],
-  );
+  const checkIfChainConnected = (chain: Chain) => {
+    return !!swapKit?.getAddress(chain);
+  };
 
   return {
     balances,
