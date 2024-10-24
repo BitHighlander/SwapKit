@@ -79,8 +79,12 @@ export const useSwapKit = () => {
           swapKit?.connectXDEFI(chains);
           break;
         }
-
+        case WalletOption.KEEPKEY_BEX: {
+          swapKit?.connectKeepkeyBex(chains);
+          break;
+        }
         default:
+          throw Error('Unhandled wallet option'+option+'!')
           break;
       }
 

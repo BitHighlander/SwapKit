@@ -8,7 +8,7 @@ import { WalletOption } from "@swapkit/helpers";
 
 // Hardcoded available wallet options for now
 export const getAvailableWalletOptions = (): WalletOption[] => {
-    const availableWallets: WalletOption[] = ["KEEPKEY_BEX", "METAMASK", "EIP6963"];
+    const availableWallets: WalletOption[] = [WalletOption.KEEPKEY_BEX, WalletOption.METAMASK, WalletOption.EIP6963];
     return availableWallets;
 };
 

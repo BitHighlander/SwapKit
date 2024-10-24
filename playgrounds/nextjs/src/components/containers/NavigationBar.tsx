@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,10 +17,12 @@ import { Power, PowerOff } from "lucide-react";
 import { Button } from "../ui/button";
 import AvailableWallets from "../wallets/AvailableWallets";
 
+// Define KEEPKEY_BEX option
+const KEEPKEY_BEX: WalletOption = "KEEPKEY_BEX"; // Ensure this matches your implementation
+
 const items = [
     { name: "Swap", href: "/" },
     { name: "Send", href: "/send" },
-    // { name: "MAYAName", href: "/mayaname" },
 ];
 
 interface NavigationBarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -47,17 +48,31 @@ const NavigationBar = ({ className, ...props }: NavigationBarProps) => {
         [selectedChains]
     );
 
+    // Make handleWalletSelect async, add logs
     const handleWalletSelect = useCallback(
-        (option: WalletOption) => {
+        async (option: WalletOption) => {
+            console.log(`Wallet selection started for: ${option}`);
             setIsDropdownOpen(false);
             const allowedChains = availableChainsByWallet[option];
-            if (!allowedChains.length || checkWalletDisabled(option)) return;
+
+            if (!allowedChains.length || checkWalletDisabled(option)) {
+                console.log(`Wallet ${option} is disabled or no allowed chains.`);
+                return;
+            }
+
             if (selectedChains.length === 0) {
+                console.log(`No chains selected. Setting default chains for ${option}`);
                 setSelectedChains(allowedChains);
-            } else if (isWalletConnected) {
-                disconnectWallet();
+            }
+
+            if (isWalletConnected) {
+                console.log("Disconnecting current wallet...");
+                await disconnectWallet();
+                console.log("Disconnected wallet.");
             } else {
-                connectWallet(option, selectedChains);
+                console.log(`Connecting to wallet ${option} with chains:`, selectedChains);
+                await connectWallet(option, selectedChains);
+                console.log(`Connected to wallet ${option}.`);
             }
         },
         [
@@ -110,6 +125,7 @@ const NavigationBar = ({ className, ...props }: NavigationBarProps) => {
                             checkWalletDisabled={checkWalletDisabled}
                         />
 
+                        {/* Chain checkboxes */}
                         <div className="p-4 bg-slate-800">
                             <div className="flex flex-row flex-wrap gap-3">
                                 {AllChains.map((chain) => (
