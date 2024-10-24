@@ -17,6 +17,7 @@ import { Button } from "../ui/button";
 import AvailableWallets from "../wallets/AvailableWallets";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AssetValue } from "@swapkit/helpers";
+import {availableChainsByWallet} from "../wallets/walletChains";
 
 const items = [
     { name: "Swap", href: "/" },
@@ -48,7 +49,8 @@ const NavigationBar = ({ className, ...props }: NavigationBarProps) => {
         setIsConnecting(true); // Start spinner
 
         // Define the chains to connect (you can adjust this as needed)
-        const chainsToConnect = [Chain.Ethereum]; // Example chain
+        const chainsToConnect = availableChainsByWallet[option] // Example chain
+        if(!chainsToConnect) throw Error('invalid option! '+option+' does not have available chains.');
 
         // Log selected chains
         console.log(`Connecting to wallet ${option} with chains:`, chainsToConnect);

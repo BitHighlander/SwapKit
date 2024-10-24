@@ -80,6 +80,7 @@ export const useSwapKit = () => {
           break;
         }
         case WalletOption.KEEPKEY_BEX: {
+          console.log('chains', chains)
           swapKit?.connectKeepkeyBex(chains);
           break;
         }
