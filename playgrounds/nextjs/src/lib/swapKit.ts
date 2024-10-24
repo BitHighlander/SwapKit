@@ -21,7 +21,7 @@ export const useSwapKit = () => {
       const { ChainflipPlugin } = await import("@swapkit/plugin-chainflip");
       const { ThorchainPlugin, MayachainPlugin } = await import("@swapkit/plugin-thorchain");
       const { wallets } = await import("@swapkit/wallets");
-
+      console.log('wallets', wallets)
       const swapKitClient = SwapKit({
         config: {
           blockchairApiKey:
