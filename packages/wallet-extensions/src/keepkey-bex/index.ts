@@ -1,4 +1,4 @@
-import { AssetValue, Chain, ChainId, filterSupportedChains, SwapKitError, WalletOption } from "@swapkit/helpers";
+import { AssetValue, Chain, filterSupportedChains, SwapKitError, WalletOption } from "@swapkit/helpers";
 import { createWallet, getWalletSupportedChains } from "@swapkit/wallet-core";
 import type { Eip1193Provider } from "ethers";
 import {
@@ -50,13 +50,10 @@ export const keepkeyBexWallet = createWallet({
     Chain.Dash,
     Chain.Dogecoin,
     Chain.Ethereum,
-    Chain.Kujira,
     Chain.Litecoin,
     Chain.Maya,
     Chain.Optimism,
     Chain.Polygon,
-    Chain.Ripple,
-    Chain.Solana,
     Chain.THORChain,
     Chain.XLayer,
   ],
@@ -81,21 +78,13 @@ async function getWalletMethods(chain: (typeof KEEPKEY_BEX_SUPPORTED_CHAINS)[num
       };
     }
 
-    case Chain.Cosmos:
-    case Chain.Kujira: {
+    case Chain.Cosmos: {
       const { getCosmosToolbox } = await import("@swapkit/toolboxes/cosmos");
+      const toolbox = await getCosmosToolbox(chain);
 
-      // @ts-expect-error assumed available connection
-      const signer = window.keepkey?.cosmos?.getOfflineSignerOnlyAmino(ChainId[chain]);
-      if (!signer) throw new SwapKitError("wallet_keepkey_signer_not_found");
-      const toolbox = await getCosmosToolbox(chain, { signer });
-
-      const accounts = await signer.getAccounts();
-      if (!accounts?.[0]?.address) throw new SwapKitError("wallet_keepkey_no_accounts");
-
-      const [{ address }] = accounts;
-
-      return { ...toolbox, address };
+      // The extension has no Keplr-style offline signer; signing happens
+      // device-side via the provider's transfer method.
+      return { ...toolbox, transfer: (tx: WalletTxParams) => walletTransfer(tx, "transfer") };
     }
 
     case Chain.Dash:
@@ -123,7 +112,8 @@ async function getWalletMethods(chain: (typeof KEEPKEY_BEX_SUPPORTED_CHAINS)[num
     case Chain.Arbitrum:
     case Chain.Optimism:
     case Chain.Polygon:
-    case Chain.Avalanche: {
+    case Chain.Avalanche:
+    case Chain.XLayer: {
       const { prepareNetworkSwitch, switchEVMWalletNetwork } = await import("@swapkit/helpers");
       const { getEvmToolbox } = await import("@swapkit/toolboxes/evm");
       const { BrowserProvider } = await import("ethers");
@@ -146,7 +136,7 @@ async function getWalletMethods(chain: (typeof KEEPKEY_BEX_SUPPORTED_CHAINS)[num
       } catch {
         throw new SwapKitError({
           errorKey: "wallet_failed_to_add_or_switch_network",
-          info: { chain, wallet: WalletOption.KEEPKEY },
+          info: { chain, wallet: WalletOption.KEEPKEY_BEX },
         });
       }
 

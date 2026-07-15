@@ -94,12 +94,6 @@
       "require": "./dist/src/passkeys/index.cjs",
       "types": "./dist/types/passkeys/index.d.ts"
     },
-    "./keepkey": {
-      "bun": "./src/keepkey.ts",
-      "default": "./dist/src/keepkey.js",
-      "require": "./dist/src/keepkey.cjs",
-      "types": "./dist/types/keepkey.d.ts"
-    },
     "./keepkey-bex": {
       "bun": "./src/keepkey-bex.ts",
       "default": "./dist/src/keepkey-bex.js",

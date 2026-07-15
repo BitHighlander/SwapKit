@@ -12,20 +12,17 @@ import type { ApproveParams, CallParams, EVMTxParams } from "@swapkit/toolboxes/
 import type { BrowserProvider, Eip1193Provider } from "ethers";
 
 interface UTXOProvider {
-  request: (
-    args: {
-      method: string;
-      params?: {
-        amount: { amount: string; decimals?: number };
-        asset: { chain: Chain; symbol: string; ticker: string };
-        memo: string | undefined;
-        from?: string;
-        recipient: string;
-        gasLimit?: string | bigint;
-      }[];
-    },
-    callback: (err: string, tx: string) => void,
-  ) => void;
+  request: (args: {
+    method: string;
+    params?: {
+      amount: { amount: string; decimals?: number };
+      asset: { chain: Chain; symbol: string; ticker: string };
+      memo: string | undefined;
+      from?: string;
+      recipient: string;
+      gasLimit?: string | bigint;
+    }[];
+  }) => Promise<string>;
 }
 
 type TransactionMethod = "transfer" | "deposit";
@@ -124,23 +121,22 @@ function transaction({
   chain: Chain;
 }): Promise<string> {
   const client = getKEEPKEYProvider(chain);
+  if (!(client && "request" in client)) {
+    throw new SwapKitError("wallet_provider_not_found");
+  }
 
-  return new Promise<string>((resolve, reject) => {
-    if (client && "request" in client) {
-      // @ts-expect-error
-      client.request({ method, params }, (err: string, tx: string) => {
-        err ? reject(err) : resolve(tx);
-      });
-    } else {
-      reject(new SwapKitError("wallet_provider_not_found"));
-    }
-  });
+  // The injected provider's request() is promise-based and ignores a
+  // node-style callback argument, so awaiting is the only path that resolves.
+  return client.request({ method, params } as Parameters<UTXOProvider["request"]>[0]);
 }
 
 export async function getKEEPKEYAddress(chain: Chain) {
   const eipProvider = getKEEPKEYProvider(chain) as Eip1193Provider;
   if (!eipProvider) {
-    throw new SwapKitError({ errorKey: "wallet_provider_not_found", info: { chain, wallet: WalletOption.KEEPKEY } });
+    throw new SwapKitError({
+      errorKey: "wallet_provider_not_found",
+      info: { chain, wallet: WalletOption.KEEPKEY_BEX },
+    });
   }
 
   if (EVMChains.includes(chain as EVMChain)) {

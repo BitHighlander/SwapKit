@@ -1,10 +1,9 @@
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
-import { Chain, EVMChains, getDerivationPathFor, getEIP6963Wallets, SKConfig, WalletOption } from "@swapkit/core";
+import { Chain, EVMChains, getDerivationPathFor, getEIP6963Wallets, WalletOption } from "@swapkit/core";
 import type { DerivationPathArray, FullWallet } from "@swapkit/sdk";
 import { LEDGER_SUPPORTED_CHAINS } from "@swapkit/wallets/ledger";
 import { BITGET_SUPPORTED_CHAINS } from "@swapkit/wallets/bitget";
 import { CTRL_SUPPORTED_CHAINS } from "@swapkit/wallets/ctrl";
-import { KEEPKEY_SUPPORTED_CHAINS } from "@swapkit/wallets/keepkey";
 import { KEEPKEY_BEX_SUPPORTED_CHAINS } from "@swapkit/wallets/keepkey-bex";
 import { KEPLR_SUPPORTED_CHAINS } from "@swapkit/wallets/keplr";
 import { decryptFromKeystore, KEYSTORE_SUPPORTED_CHAINS } from "@swapkit/wallets/keystore";
@@ -44,7 +43,6 @@ export const availableChainsByWallet = {
   [WalletOption.CTRL]: CTRL_SUPPORTED_CHAINS,
   [WalletOption.EIP6963]: EVMChains,
   [WalletOption.EXODUS]: PASSKEYS_SUPPORTED_CHAINS,
-  [WalletOption.KEEPKEY]: KEEPKEY_SUPPORTED_CHAINS,
   [WalletOption.KEEPKEY_BEX]: KEEPKEY_BEX_SUPPORTED_CHAINS,
   [WalletOption.KEPLR]: KEPLR_SUPPORTED_CHAINS,
   [WalletOption.KEYSTORE]: KEYSTORE_SUPPORTED_CHAINS,
@@ -91,23 +89,6 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
         case WalletOption.KEPLR:
         case WalletOption.LEAP:
           return skClient.connectKeplr(chainsToConnect, option);
-        case WalletOption.KEEPKEY: {
-          const derivationPaths = chainsToConnect.reduce(
-            (acc, chain) => {
-              const derivPath = getDerivationPathFor({ chain, index: 0 });
-              acc[chain] = derivPath as DerivationPathArray;
-              return acc;
-            },
-            {} as Record<Chain, DerivationPathArray>,
-          );
-
-          await skClient.connectKeepkey?.(chainsToConnect, derivationPaths);
-          const { keepKey } = SKConfig.get("apiKeys");
-          if (keepKey) {
-            localStorage.setItem("keepkeyApiKey", keepKey);
-          }
-          return true;
-        }
         case WalletOption.KEEPKEY_BEX:
           return skClient.connectKeepkeyBex?.(chainsToConnect);
         case WalletOption.ONEKEY:
