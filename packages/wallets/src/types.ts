@@ -12,7 +12,6 @@ import type { polkadotWallet } from "@swapkit/wallet-extensions/polkadotjs";
 import type { talismanWallet } from "@swapkit/wallet-extensions/talisman";
 import type { tronlinkWallet } from "@swapkit/wallet-extensions/tronlink";
 import type { vultisigWallet } from "@swapkit/wallet-extensions/vultisig";
-import type { keepkeyWallet } from "@swapkit/wallet-hardware/keepkey";
 import type { ledgerWallet } from "@swapkit/wallet-hardware/ledger";
 import type { trezorWallet } from "@swapkit/wallet-hardware/trezor";
 import type { coinbaseWallet } from "./coinbase";
@@ -32,7 +31,6 @@ export type SKWallets = {
   [WalletOption.CTRL]: typeof ctrlWallet;
   [WalletOption.EIP6963]: typeof evmWallet;
   [WalletOption.EXODUS]: typeof passkeysWallet;
-  [WalletOption.KEEPKEY]: typeof keepkeyWallet;
   [WalletOption.KEEPKEY_BEX]: typeof keepkeyBexWallet;
   [WalletOption.KEPLR]: typeof keplrWallet;
   [WalletOption.KEYSTORE]: typeof keystoreWallet;
@@ -68,7 +66,6 @@ export type SKWalletsSupportedChains = {
   [WalletOption.CTRL]: typeof ctrlWallet.connectCtrl.supportedChains;
   [WalletOption.EIP6963]: typeof evmWallet.connectEVMWallet.supportedChains;
   [WalletOption.EXODUS]: typeof passkeysWallet.connectPasskeys.supportedChains;
-  [WalletOption.KEEPKEY]: typeof keepkeyWallet.connectKeepkey.supportedChains;
   [WalletOption.KEEPKEY_BEX]: typeof keepkeyBexWallet.connectKeepkeyBex.supportedChains;
   [WalletOption.KEPLR]: typeof keplrWallet.connectKeplr.supportedChains;
   [WalletOption.KEYSTORE]: typeof keystoreWallet.connectKeystore.supportedChains;

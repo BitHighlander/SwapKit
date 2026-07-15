@@ -344,7 +344,6 @@
       "version": "4.2.11",
       "dependencies": {
         "@cosmjs/crypto": "0.37.0",
-        "@keepkey/keepkey-sdk": "~0.2.62",
         "@ledgerhq/devices": "~8.7.0",
         "@ledgerhq/errors": "~6.27.0",
         "@ledgerhq/hw-app-btc": "~10.12.0",
@@ -371,7 +370,6 @@
       },
       "devDependencies": {
         "@cosmjs/crypto": "0.37.0",
-        "@keepkey/keepkey-sdk": "0.2.62",
         "@ledgerhq/devices": "8.7.0",
         "@ledgerhq/errors": "6.27.0",
         "@ledgerhq/hw-app-btc": "10.12.0",
@@ -1142,8 +1140,6 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
-
-    "@keepkey/keepkey-sdk": ["@keepkey/keepkey-sdk@0.2.62", "", {}, "sha512-RQYR4hljLytvIK7Q0lV5x+gd/gtAtYtO5a7af5dKUf4pTX5zrRNOrCZIDNQT/f+ZExhRIZ7mO8SoO00AoYMcUQ=="],
 
     "@keplr-wallet/types": ["@keplr-wallet/types@0.12.285", "", { "dependencies": { "long": "^4.0.0" }, "peerDependencies": { "starknet": "^7" } }, "sha512-MouTT/zgrs7Hta2tgms8OZdgJnsKnCKyRLFBcjwrpgMtuP2km5+lXzxc6qfEsbl4MRVhqt0zUXFwamPhwEi9Jw=="],
 

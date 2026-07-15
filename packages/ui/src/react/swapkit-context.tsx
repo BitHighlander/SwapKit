@@ -108,10 +108,6 @@ export const useSwapKit = () => {
             await swapKit?.connectCtrl?.(chains);
             break;
 
-          case WalletOption.KEEPKEY:
-            await swapKit?.connectKeepkey?.(chains);
-            break;
-
           case WalletOption.KEEPKEY_BEX:
             await swapKit?.connectKeepkeyBex?.(chains);
             break;

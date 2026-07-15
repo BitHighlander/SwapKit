@@ -45,7 +45,6 @@ export enum WalletOption {
    * @deprecated Use PASSKEYS instead
    */
   EXODUS = "EXODUS",
-  KEEPKEY = "KEEPKEY",
   KEEPKEY_BEX = "KEEPKEY_BEX",
   KEPLR = "KEPLR",
   KEYSTORE = "KEYSTORE",

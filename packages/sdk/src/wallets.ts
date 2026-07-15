@@ -4,7 +4,6 @@ export * from "@swapkit/wallets/coinbase";
 export * from "@swapkit/wallets/cosmostation";
 export * from "@swapkit/wallets/ctrl";
 export * from "@swapkit/wallets/evm-extensions";
-export * from "@swapkit/wallets/keepkey";
 export * from "@swapkit/wallets/keepkey-bex";
 export * from "@swapkit/wallets/keplr";
 export * from "@swapkit/wallets/keystore";

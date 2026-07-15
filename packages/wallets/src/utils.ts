@@ -12,7 +12,6 @@ export async function loadWallet<W extends WalletOption>(walletOption: W): Promi
     .with(WalletOption.OKX, async () => (await import("@swapkit/wallet-extensions/okx")).okxWallet)
     .with(WalletOption.ONEKEY, async () => (await import("@swapkit/wallet-extensions/onekey")).onekeyWallet)
     .with(WalletOption.EXODUS, async () => (await import("./passkeys")).passkeysWallet)
-    .with(WalletOption.KEEPKEY, async () => (await import("@swapkit/wallet-hardware/keepkey")).keepkeyWallet)
     .with(
       WalletOption.KEEPKEY_BEX,
       async () => (await import("@swapkit/wallet-extensions/keepkey-bex")).keepkeyBexWallet,
