@@ -18,11 +18,22 @@ export const keepkeyBexWallet = createWallet({
       // Sequential on purpose: parallel connects fire one BEX approval popup
       // per chain. Serially, the first EVM approval authorizes the site and
       // every later chain resolves silently via eth_accounts.
+      // Per-chain failures are skipped (e.g. a BEX provider missing a method)
+      // so one broken chain doesn't kill the whole multi-chain connect.
+      let connected = 0;
       for (const chain of filteredChains) {
-        const address = await getKEEPKEYAddress(chain);
-        const walletMethods = await getWalletMethods(chain);
+        try {
+          const address = await getKEEPKEYAddress(chain);
+          const walletMethods = await getWalletMethods(chain);
 
-        addChain({ ...walletMethods, address, chain, walletType });
+          addChain({ ...walletMethods, address, chain, walletType });
+          connected++;
+        } catch (error) {
+          console.warn(`[keepkey-bex] skipping ${chain}: ${(error as Error)?.message}`);
+        }
+      }
+      if (connected === 0) {
+        throw new SwapKitError("wallet_keepkey_no_accounts");
       }
 
       return true;
