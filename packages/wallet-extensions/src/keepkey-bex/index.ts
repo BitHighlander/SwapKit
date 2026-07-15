@@ -15,14 +15,15 @@ export const keepkeyBexWallet = createWallet({
     async function connectKeepkeyBex(chains: Chain[]) {
       const filteredChains = filterSupportedChains({ chains, supportedChains, walletType });
 
-      await Promise.all(
-        filteredChains.map(async (chain) => {
-          const address = await getKEEPKEYAddress(chain);
-          const walletMethods = await getWalletMethods(chain);
+      // Sequential on purpose: parallel connects fire one BEX approval popup
+      // per chain. Serially, the first EVM approval authorizes the site and
+      // every later chain resolves silently via eth_accounts.
+      for (const chain of filteredChains) {
+        const address = await getKEEPKEYAddress(chain);
+        const walletMethods = await getWalletMethods(chain);
 
-          addChain({ ...walletMethods, address, chain, walletType });
-        }),
-      );
+        addChain({ ...walletMethods, address, chain, walletType });
+      }
 
       return true;
     },

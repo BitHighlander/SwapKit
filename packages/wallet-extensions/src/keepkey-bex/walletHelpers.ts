@@ -143,12 +143,21 @@ export async function getKEEPKEYAddress(chain: Chain) {
     throw new SwapKitError({ errorKey: "wallet_provider_not_found", info: { chain, wallet: WalletOption.KEEPKEY } });
   }
 
-  let method = "request_accounts";
   if (EVMChains.includes(chain as EVMChain)) {
-    method = "eth_requestAccounts";
+    // Silent-first: eth_accounts returns already-authorized accounts without an
+    // approval popup; only fall back to eth_requestAccounts when nothing is
+    // authorized yet, so a multi-chain connect prompts at most once.
+    try {
+      const accounts = await eipProvider.request({ method: "eth_accounts", params: [] });
+      if (accounts?.[0]) return accounts[0];
+    } catch (_error) {
+      // provider may not support eth_accounts — fall through to request
+    }
+    const [response] = await eipProvider.request({ method: "eth_requestAccounts", params: [] });
+    return response;
   }
 
-  const [response] = await eipProvider.request({ method, params: [] });
+  const [response] = await eipProvider.request({ method: "request_accounts", params: [] });
   return response;
 }
 
