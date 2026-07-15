@@ -54,23 +54,38 @@ export const keepkeyWallet = createWallet({
     },
   name: "connectKeepkey",
   supportedChains: [
+    // EVM Chains (all use secp256k1 + m/44'/60'/0'/0/0)
     Chain.Arbitrum,
+    Chain.Aurora,
     Chain.Avalanche,
     Chain.Base,
+    Chain.Berachain,
     Chain.BinanceSmartChain,
-    Chain.Bitcoin,
-    Chain.BitcoinCash,
-    Chain.Cosmos,
-    Chain.Dogecoin,
-    Chain.Dash,
+    Chain.Botanix,
+    Chain.Core,
+    Chain.Corn,
+    Chain.Cronos,
     Chain.Ethereum,
-    Chain.Litecoin,
-    Chain.Ripple,
+    Chain.Gnosis,
+    Chain.Hyperevm,
+    Chain.Monad,
     Chain.Optimism,
     Chain.Polygon,
-    Chain.THORChain,
-    Chain.Maya,
+    Chain.Sonic,
+    Chain.Unichain,
     Chain.XLayer,
+    // UTXO Chains
+    Chain.Bitcoin,
+    Chain.BitcoinCash,
+    Chain.Dash,
+    Chain.Dogecoin,
+    Chain.Litecoin,
+    // Cosmos Chains
+    Chain.Cosmos,
+    Chain.Maya,
+    Chain.THORChain,
+    // Other Chains
+    Chain.Ripple,
   ],
   walletType: WalletOption.KEEPKEY,
 });
@@ -89,13 +104,25 @@ async function getWalletMethods({
   const { getProvider, getEvmToolbox } = await import("@swapkit/toolboxes/evm");
 
   switch (chain) {
-    case Chain.BinanceSmartChain:
+    // All EVM chains use the same signing flow
     case Chain.Arbitrum:
-    case Chain.Optimism:
-    case Chain.Polygon:
+    case Chain.Aurora:
     case Chain.Avalanche:
     case Chain.Base:
+    case Chain.Berachain:
+    case Chain.BinanceSmartChain:
+    case Chain.Botanix:
+    case Chain.Core:
+    case Chain.Corn:
+    case Chain.Cronos:
     case Chain.Ethereum:
+    case Chain.Gnosis:
+    case Chain.Hyperevm:
+    case Chain.Monad:
+    case Chain.Optimism:
+    case Chain.Polygon:
+    case Chain.Sonic:
+    case Chain.Unichain:
     case Chain.XLayer: {
       const provider = await getProvider(chain);
       const signer = new KeepKeySigner({ chain, derivationPath, provider, sdk });
