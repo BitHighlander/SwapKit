@@ -20,3 +20,10 @@ dist/
 node_modules/
 references/
 zig-out/
+
+# playwright artifacts
+playwright-report/
+test-results/
+
+# wallet-extension is dist-only (extracted package kept for Swapkit-Wrapper file: dep)
+!packages/wallet-extension/dist/
