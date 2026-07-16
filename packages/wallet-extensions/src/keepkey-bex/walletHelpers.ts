@@ -130,6 +130,19 @@ function transaction({
   return client.request({ method, params } as Parameters<UTXOProvider["request"]>[0]);
 }
 
+/** First real address in a BEX accounts response, or undefined.
+ *  The BEX handlers are inconsistent: EVM and BitcoinCash resolve to a flat
+ *  [address], every other chain resolves to [addresses[]] — an array NESTED in
+ *  an array — and un-derived paths appear as "" entries (Bitcoin exposes 7
+ *  derivation paths, all "" until the vault populates them). Destructuring one
+ *  level therefore leaked whole ARRAYS into wallet.address, which every
+ *  consumer types as string (Pioneer rejected them with a 400). Flatten and
+ *  take the first non-empty string instead. */
+function firstAddress(response: unknown): string | undefined {
+  const flat = Array.isArray(response) ? response.flat(2) : [response];
+  return flat.find((entry): entry is string => typeof entry === "string" && entry.trim().length > 0);
+}
+
 export async function getKEEPKEYAddress(chain: Chain) {
   const eipProvider = getKEEPKEYProvider(chain) as Eip1193Provider;
   if (!eipProvider) {
@@ -144,17 +157,25 @@ export async function getKEEPKEYAddress(chain: Chain) {
     // approval popup; only fall back to eth_requestAccounts when nothing is
     // authorized yet, so a multi-chain connect prompts at most once.
     try {
-      const accounts = await eipProvider.request({ method: "eth_accounts", params: [] });
-      if (accounts?.[0]) return accounts[0];
+      const silent = firstAddress(await eipProvider.request({ method: "eth_accounts", params: [] }));
+      if (silent) return silent;
     } catch (_error) {
       // provider may not support eth_accounts — fall through to request
     }
-    const [response] = await eipProvider.request({ method: "eth_requestAccounts", params: [] });
-    return response;
+    const address = firstAddress(await eipProvider.request({ method: "eth_requestAccounts", params: [] }));
+    if (!address) {
+      throw new SwapKitError({ errorKey: "wallet_keepkey_no_accounts", info: { chain } });
+    }
+    return address;
   }
 
-  const [response] = await eipProvider.request({ method: "request_accounts", params: [] });
-  return response;
+  const address = firstAddress(await eipProvider.request({ method: "request_accounts", params: [] }));
+  if (!address) {
+    // Throw so connectKeepkeyBex skips this chain instead of registering an
+    // empty/garbage address that poisons every downstream consumer.
+    throw new SwapKitError({ errorKey: "wallet_keepkey_no_accounts", info: { chain } });
+  }
+  return address;
 }
 
 export async function walletTransfer(

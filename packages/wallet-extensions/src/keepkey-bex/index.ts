@@ -114,7 +114,7 @@ async function getWalletMethods(chain: (typeof KEEPKEY_BEX_SUPPORTED_CHAINS)[num
     case Chain.Polygon:
     case Chain.Avalanche:
     case Chain.XLayer: {
-      const { prepareNetworkSwitch, switchEVMWalletNetwork } = await import("@swapkit/helpers");
+      const { prepareNetworkSwitch } = await import("@swapkit/helpers");
       const { getEvmToolbox } = await import("@swapkit/toolboxes/evm");
       const { BrowserProvider } = await import("ethers");
       const ethereumWindowProvider = getKEEPKEYProvider(chain) as Eip1193Provider;
@@ -128,18 +128,11 @@ async function getWalletMethods(chain: (typeof KEEPKEY_BEX_SUPPORTED_CHAINS)[num
       const toolbox = await getEvmToolbox(chain, { provider, signer });
       const keepkeyMethods = getKEEPKEYMethods(provider, chain);
 
-      try {
-        if (chain !== Chain.Ethereum) {
-          const networkParams = toolbox.getNetworkParams();
-          await switchEVMWalletNetwork(provider, chain, networkParams);
-        }
-      } catch {
-        throw new SwapKitError({
-          errorKey: "wallet_failed_to_add_or_switch_network",
-          info: { chain, wallet: WalletOption.KEEPKEY_BEX },
-        });
-      }
-
+      // No network switch at connect time: reading an address needs no active
+      // network, and connecting N EVM chains fired N switch requests at once —
+      // the wallet answers -32002 (request pending) to all but the first, which
+      // used to cascade into an "Add Network" prompt per chain. The methods
+      // returned below are wrapped to switch on demand when we actually sign.
       return prepareNetworkSwitch({ chain, provider, toolbox: { ...toolbox, ...keepkeyMethods } });
     }
 

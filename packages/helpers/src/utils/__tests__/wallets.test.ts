@@ -328,27 +328,109 @@ describe("wallets", () => {
       expect(mockSend).toHaveBeenCalledWith("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
     });
 
-    test("adds network when switch fails and networkParams provided", async () => {
+    const polygonNetworkParams = {
+      chainId: "0x89",
+      chainName: "Polygon",
+      nativeCurrency: { decimals: 18, name: "MATIC", symbol: "MATIC" },
+      rpcUrls: ["https://polygon-rpc.com"],
+    };
+
+    /** 4902 = wallet doesn't know the chain, so adding it is the right move. */
+    test("adds network when switch fails with 4902 and networkParams provided", async () => {
       const mockSend = mock()
-        .mockImplementationOnce(() => Promise.reject(new Error("Chain not found")))
+        .mockImplementationOnce(() => Promise.reject(Object.assign(new Error("Unrecognized chain ID"), { code: 4902 })))
         .mockImplementationOnce(() => Promise.resolve());
 
       const provider = createMockBrowserProvider({ send: mockSend });
-      const networkParams = {
-        chainId: "0x89",
-        chainName: "Polygon",
-        nativeCurrency: { decimals: 18, name: "MATIC", symbol: "MATIC" },
-        rpcUrls: ["https://polygon-rpc.com"],
-      };
 
-      await switchEVMWalletNetwork(provider, Chain.Polygon, networkParams);
+      await switchEVMWalletNetwork(provider, Chain.Polygon, polygonNetworkParams);
 
       expect(mockSend).toHaveBeenCalledTimes(2);
-      expect(mockSend).toHaveBeenLastCalledWith("wallet_addEthereumChain", [networkParams]);
+      expect(mockSend).toHaveBeenLastCalledWith("wallet_addEthereumChain", [polygonNetworkParams]);
     });
 
-    test("throws error when switch fails and no networkParams provided", async () => {
-      const mockSend = mock(() => Promise.reject(new Error("Chain not found")));
+    test("finds the 4902 code inside a real ethers wrapper (top-level code is the string UNKNOWN_ERROR)", async () => {
+      // Real ethers v6 shape: BrowserProvider wraps the EIP-1193 rejection as
+      // makeError("could not coalesce error", "UNKNOWN_ERROR", { error, payload })
+      // — the TOP-LEVEL code is always the truthy string "UNKNOWN_ERROR" and the
+      // numeric 4902 only exists nested at .error.code. A first-non-nullish
+      // lookup short-circuits on the wrapper string and misses it.
+      const mockSend = mock()
+        .mockImplementationOnce(() =>
+          Promise.reject(
+            Object.assign(new Error("could not coalesce error"), {
+              code: "UNKNOWN_ERROR",
+              error: { code: 4902, message: "Unrecognized chain ID" },
+            }),
+          ),
+        )
+        .mockImplementationOnce(() => Promise.resolve());
+
+      const provider = createMockBrowserProvider({ send: mockSend });
+
+      await switchEVMWalletNetwork(provider, Chain.Polygon, polygonNetworkParams);
+
+      expect(mockSend).toHaveBeenLastCalledWith("wallet_addEthereumChain", [polygonNetworkParams]);
+    });
+
+    test("finds the 4902 code in MetaMask's -32603/data.originalError wrapper", async () => {
+      const mockSend = mock()
+        .mockImplementationOnce(() =>
+          Promise.reject(
+            Object.assign(new Error("Internal JSON-RPC error."), {
+              code: -32603,
+              data: { originalError: { code: 4902, message: "Unrecognized chain ID" } },
+            }),
+          ),
+        )
+        .mockImplementationOnce(() => Promise.resolve());
+
+      const provider = createMockBrowserProvider({ send: mockSend });
+
+      await switchEVMWalletNetwork(provider, Chain.Polygon, polygonNetworkParams);
+
+      expect(mockSend).toHaveBeenLastCalledWith("wallet_addEthereumChain", [polygonNetworkParams]);
+    });
+
+    test("integration: a REAL ethers BrowserProvider wrapping a 4902 rejection still triggers add-network", async () => {
+      // The mocks above assert the shapes we believe ethers produces; this test
+      // asserts against ethers itself so mock drift can't hide a regression.
+      const { BrowserProvider } = await import("ethers");
+      const requests: string[] = [];
+      const eip1193 = {
+        request: ({ method }: { method: string }) => {
+          requests.push(method);
+          if (method === "eth_chainId") return Promise.resolve("0x1");
+          if (method === "wallet_switchEthereumChain") {
+            return Promise.reject(Object.assign(new Error("Unrecognized chain ID 0x89"), { code: 4902 }));
+          }
+          return Promise.resolve(null);
+        },
+      };
+      const provider = new BrowserProvider(eip1193, "any");
+
+      await switchEVMWalletNetwork(provider, Chain.Polygon, polygonNetworkParams);
+
+      expect(requests).toContain("wallet_addEthereumChain");
+    });
+
+    // Regression: any non-4902 error used to trigger an "Add Network" prompt for
+    // a chain the user already had. 4001 = user rejected, -32002 = request pending.
+    test.each([
+      ["user rejected the switch", 4001],
+      ["a request is already pending", -32002],
+    ])("does not add the network when %s", async (_label, code) => {
+      const mockSend = mock(() => Promise.reject(Object.assign(new Error("switch failed"), { code })));
+      const provider = createMockBrowserProvider({ send: mockSend });
+
+      await expect(switchEVMWalletNetwork(provider, Chain.Polygon, polygonNetworkParams)).rejects.toThrow(SwapKitError);
+
+      expect(mockSend).toHaveBeenCalledTimes(1);
+      expect(mockSend).not.toHaveBeenCalledWith("wallet_addEthereumChain", expect.anything());
+    });
+
+    test("throws error when switch fails with 4902 and no networkParams provided", async () => {
+      const mockSend = mock(() => Promise.reject(Object.assign(new Error("Chain not found"), { code: 4902 })));
       const provider = createMockBrowserProvider({ send: mockSend });
 
       await expect(switchEVMWalletNetwork(provider, Chain.Ethereum)).rejects.toThrow(SwapKitError);
@@ -391,34 +473,43 @@ describe("wallets", () => {
   });
 
   describe("wrapMethodWithNetworkSwitch", () => {
+    // The guard reads eth_chainId FRESH via provider.send — never getNetwork(),
+    // whose "any"-network cache returns the pre-switch chain after an external
+    // change, silently signing on the wrong chain.
+    const sendOnChain = (currentChainIdHex: string) =>
+      mock((method: string) => (method === "eth_chainId" ? Promise.resolve(currentChainIdHex) : Promise.resolve()));
+
     test("calls original function directly when network already matches (no switch needed)", async () => {
       const originalFunc = mock(() => Promise.resolve("result"));
-      const mockSend = mock(() => Promise.resolve());
-      // Mock chainId that when toString() equals chainIdHex "0x1"
-      // This simulates the API returning hex format
-      const mockChainId = { toString: () => "0x1" };
-      const provider = createMockBrowserProvider({
-        getNetwork: mock(() => Promise.resolve({ chainId: mockChainId })),
-        send: mockSend,
-      });
+      const mockSend = sendOnChain("0x1");
+      const provider = createMockBrowserProvider({ send: mockSend });
 
       const wrapped = wrapMethodWithNetworkSwitch(originalFunc, provider, Chain.Ethereum);
       const result = await wrapped("arg1", "arg2");
 
-      expect(mockSend).not.toHaveBeenCalled(); // Should NOT switch network
+      expect(mockSend).toHaveBeenCalledWith("eth_chainId", []);
+      expect(mockSend).not.toHaveBeenCalledWith("wallet_switchEthereumChain", expect.anything());
       expect(originalFunc).toHaveBeenCalledWith("arg1", "arg2");
       expect(result).toBe("result");
     });
 
+    test("does not consult the cached getNetwork() — the chain read must be fresh", async () => {
+      const originalFunc = mock(() => Promise.resolve("result"));
+      const getNetwork = mock(() => Promise.resolve({ chainId: 1n })); // stale cache says Ethereum
+      const mockSend = sendOnChain("0x89"); // wallet is actually on Polygon
+      const provider = createMockBrowserProvider({ getNetwork, send: mockSend });
+
+      const wrapped = wrapMethodWithNetworkSwitch(originalFunc, provider, Chain.Ethereum);
+      await wrapped();
+
+      expect(getNetwork).not.toHaveBeenCalled();
+      expect(mockSend).toHaveBeenCalledWith("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
+    });
+
     test("switches network before calling function when network differs", async () => {
       const originalFunc = mock(() => Promise.resolve("result"));
-      const mockSend = mock(() => Promise.resolve());
-      // Mock chainId for Polygon (0x89 in hex)
-      const mockChainId = { toString: () => "0x89" };
-      const provider = createMockBrowserProvider({
-        getNetwork: mock(() => Promise.resolve({ chainId: mockChainId })),
-        send: mockSend,
-      });
+      const mockSend = sendOnChain("0x89"); // on Polygon, asking for Ethereum
+      const provider = createMockBrowserProvider({ send: mockSend });
 
       const wrapped = wrapMethodWithNetworkSwitch(originalFunc, provider, Chain.Ethereum);
       await wrapped();
@@ -429,11 +520,12 @@ describe("wallets", () => {
 
     test("throws SwapKitError when network switch fails", async () => {
       const originalFunc = mock(() => Promise.resolve("result"));
-      const mockChainId = { toString: () => "0x89" }; // Different from Ethereum
-      const provider = createMockBrowserProvider({
-        getNetwork: mock(() => Promise.resolve({ chainId: mockChainId })),
-        send: mock(() => Promise.reject(new Error("User rejected"))),
-      });
+      const mockSend = mock((method: string) =>
+        method === "eth_chainId"
+          ? Promise.resolve("0x89") // on Polygon, different from Ethereum
+          : Promise.reject(Object.assign(new Error("User rejected"), { code: 4001 })),
+      );
+      const provider = createMockBrowserProvider({ send: mockSend });
 
       const wrapped = wrapMethodWithNetworkSwitch(originalFunc, provider, Chain.Ethereum);
 
@@ -442,16 +534,48 @@ describe("wallets", () => {
 
     test("preserves function return value after network switch", async () => {
       const originalFunc = mock(() => Promise.resolve({ txHash: "0xabc123" }));
-      const mockChainId = { toString: () => "0x38" }; // BSC hex
-      const provider = createMockBrowserProvider({
-        getNetwork: mock(() => Promise.resolve({ chainId: mockChainId })),
-        send: mock(() => Promise.resolve()),
-      });
+      const provider = createMockBrowserProvider({ send: sendOnChain("0x38") }); // on BSC, asking for Ethereum
 
       const wrapped = wrapMethodWithNetworkSwitch(originalFunc, provider, Chain.Ethereum);
       const result = await wrapped();
 
       expect(result).toEqual({ txHash: "0xabc123" });
+    });
+
+    // Regression: after the connect-time switch was removed, the on-demand wrap
+    // is the ONLY remaining path that can add a missing network — it must thread
+    // the toolbox's networkParams all the way into wallet_addEthereumChain.
+    test("adds a missing network on demand using the toolbox's networkParams", async () => {
+      const networkParams = {
+        chainId: "0x89",
+        chainName: "Polygon",
+        nativeCurrency: { decimals: 18, name: "POL", symbol: "POL" },
+        rpcUrls: ["https://polygon-rpc.com"],
+      };
+      const transfer = mock(() => Promise.resolve("0xtxhash"));
+      const mockSend = mock((method: string) => {
+        if (method === "eth_chainId") return Promise.resolve("0x1"); // wallet on Ethereum
+        if (method === "wallet_switchEthereumChain") {
+          // real ethers wrapper shape for an unknown chain
+          return Promise.reject(
+            Object.assign(new Error("could not coalesce error"), {
+              code: "UNKNOWN_ERROR",
+              error: { code: 4902, message: "Unrecognized chain ID" },
+            }),
+          );
+        }
+        return Promise.resolve();
+      });
+      const provider = createMockBrowserProvider({ send: mockSend });
+
+      const toolbox = { getNetworkParams: () => networkParams, transfer };
+      const wrapped = prepareNetworkSwitch({ chain: Chain.Polygon, provider, toolbox });
+
+      const result = await wrapped.transfer();
+
+      expect(mockSend).toHaveBeenCalledWith("wallet_addEthereumChain", [networkParams]);
+      expect(transfer).toHaveBeenCalled();
+      expect(result).toBe("0xtxhash");
     });
   });
 

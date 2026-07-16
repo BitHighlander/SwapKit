@@ -55,6 +55,23 @@ export function listWeb3EVMWallets() {
   return wallets;
 }
 
+/** EIP-3326: the wallet does not recognize the chain, so it must be added first.
+ *  Every other error means the chain IS known and the switch failed for another
+ *  reason — 4001 (user rejected) or -32002 (a request is already pending). */
+const CHAIN_NOT_ADDED = 4902;
+
+/** True when the error — at any wrapping layer — is EIP-3326 code 4902.
+ *  Provider errors arrive wrapped differently per transport, and the wrapper
+ *  usually has its OWN truthy code that shadows the real one: ethers
+ *  BrowserProvider throws code "UNKNOWN_ERROR" (string) with the numeric 4902
+ *  nested at .error.code; MetaMask throws -32603 with it nested at
+ *  .data.originalError.code. So a first-non-nullish lookup can never work —
+ *  check every slot for 4902 instead. */
+function isChainNotAddedError(error: unknown): boolean {
+  const e = error as any;
+  return [e?.code, e?.error?.code, e?.info?.error?.code, e?.data?.originalError?.code].includes(CHAIN_NOT_ADDED);
+}
+
 export async function switchEVMWalletNetwork(provider: BrowserProvider, chain: Chain, networkParams?: NetworkParams) {
   const chainConfig = getChainConfig(chain);
 
@@ -65,6 +82,12 @@ export async function switchEVMWalletNetwork(provider: BrowserProvider, chain: C
       provider,
     });
   } catch (error) {
+    // Only offer to add the network when the wallet says it doesn't have it.
+    // Falling back on *any* error prompts "Add Network" for chains the user
+    // already has — and turns a single rejection into a second prompt.
+    if (!isChainNotAddedError(error)) {
+      throw new SwapKitError("helpers_failed_to_switch_network", { error });
+    }
     if (!networkParams) {
       throw new SwapKitError("helpers_failed_to_switch_network", {
         error: error,
@@ -107,14 +130,30 @@ export function wrapMethodWithNetworkSwitch<T extends (...args: any[]) => any>(
   func: T,
   provider: BrowserProvider,
   chain: Chain,
+  networkParams?: NetworkParams,
 ) {
   return (async (...args: any[]) => {
     const { chainIdHex } = getChainConfig(chain);
-    if ((await provider.getNetwork()).chainId.toString() === chainIdHex) {
-      return func(...args);
+    // Skipping the switch is only safe against a FRESH chain read.
+    // provider.getNetwork() must not be used here: with "any"-network ethers it
+    // returns the cached chainId after an external switch (another provider
+    // over the same wallet, or the wallet UI), and eth_sendTransaction carries
+    // no chainId — a stale skip signs on whatever chain the wallet is actually
+    // on. eth_chainId goes straight to the wallet on every call.
+    // Compare numerically: eth_chainId is hex, chainIdHex is hex, but wallets
+    // vary in padding/case — Number() normalizes both.
+    try {
+      const current = Number(await provider.send("eth_chainId", []));
+      if (current === Number(chainIdHex)) {
+        return func(...args);
+      }
+    } catch (_error) {
+      // Can't read the current chain — fall through and attempt the switch.
     }
     try {
-      await switchEVMWalletNetwork(provider, chain);
+      // networkParams lets the wallet add the chain if it genuinely lacks it —
+      // this used to happen eagerly at connect time.
+      await switchEVMWalletNetwork(provider, chain, networkParams);
     } catch (error) {
       throw new SwapKitError({ errorKey: "helpers_failed_to_switch_network", info: { error } });
     }
@@ -150,6 +189,11 @@ export function prepareNetworkSwitch<T extends Record<string, unknown>, M extend
     "estimateGasPrices",
     "createContractTxObject",
   ] as M[];
+  // The toolbox knows its own network params; pass them down so an on-demand
+  // switch can add the chain if the wallet doesn't have it yet.
+  const getNetworkParams = toolbox.getNetworkParams;
+  const networkParams = typeof getNetworkParams === "function" ? (getNetworkParams() as NetworkParams) : undefined;
+
   const wrappedMethods = methodsToWrap.reduce((object, methodName) => {
     if (!toolbox[methodName]) return object;
 
@@ -158,7 +202,7 @@ export function prepareNetworkSwitch<T extends Record<string, unknown>, M extend
     if (typeof method !== "function") return object;
 
     // @ts-expect-error
-    const wrappedMethod = wrapMethodWithNetworkSwitch(method, provider, chain);
+    const wrappedMethod = wrapMethodWithNetworkSwitch(method, provider, chain, networkParams);
 
     // biome-ignore lint/performance/noAccumulatingSpread: valid use case
     return { ...object, [methodName]: wrappedMethod };
